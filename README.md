@@ -20,5 +20,5 @@
 > in Latin, littoralis means “coastal”
 
 
-#### [VCF summary stats](https://github.com/makopyan/fox/blob/main/mainland.md)
+#### [VCF summary stats](https://github.com/makopyan/fox/blob/main/variants.md)
 

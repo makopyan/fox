@@ -1,5 +1,5 @@
 ---
-title: "mainland"
+title: "variants"
 output: github_document
 always_allow_html: true
 ---

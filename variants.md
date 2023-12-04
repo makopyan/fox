@@ -1,4 +1,4 @@
-mainland
+variants
 ================
 
 start with two vcf files, one for gray foxes and one for island foxes
