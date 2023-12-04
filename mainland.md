@@ -1,10 +1,16 @@
 mainland
 ================
 
-working with vcf (variants called using gray fox reference)
+start with two vcf files, one for gray foxes and one for island foxes
+with variants called using the gray fox reference genome
 
-Copy file to my scratch (/scratch1/marjanak/) from OG directory:
+Copy files to my scratch (/scratch1/marjanak/) from OG directory:
+
 `/project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz`
+
+and
+
+`/project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/ChannelIsland/grayfox_filtered.renameChroms.ACgr25_DPgr165lt500.vcf.gz`
 
 Run *vcf-stats* module from vcftools with shell script `vcftools.sh`:  
 <details>
@@ -35,4 +41,10 @@ vcf-stats grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz
 
 Command: `sbatch ./vcfstats.sh`
 
-Includes 42 samples and 602838 variants
+#### Mainland Fox
+
+Includes 42 samples and 602,838 variants
+
+#### Island Fox
+
+Includes 16 samples and 4,160,435 variants
