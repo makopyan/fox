@@ -17,7 +17,7 @@
 > from the Latin cinereus, meaning “ash-colored,” and argenteus, meaning “silvery”
 
 
-#### [Overview](https://github.com/makopyan/fox/blob/main/steps.md)
+### [Preparing Input](https://github.com/makopyan/fox/blob/main/inputstats.md)
 
 
 
