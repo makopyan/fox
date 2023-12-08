@@ -1,0 +1,183 @@
+---
+title: "input"
+output: github_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(rmarkdown)
+library(usmap)
+library(data.table)
+```
+
+### Samples
+
+
+focus on mainland foxes from Sacks only (remove one bad sample) *n=41 remaining*
+
+figure out number of non-hybrid samples  *n=26 (14 east + 12 west)*
+
+```{r Samples, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width = 7}
+
+usa <- map_data("state")
+
+pop <- read_tsv("inputstats_files/mainland_WGSmetadata.txt") %>% 
+  dplyr::rename("long"=Lon,"lat"=Lat) %>% 
+  mutate(`Samples (n=41)`=case_when(Deme=="hybrid" ~ "hybrid (15)",
+                                    Region=="West" ~ "west (12)",
+                                    TRUE ~ "east (14)")) %>% 
+  mutate(depth=case_when(`Depth(x)`>18 ~ 8,
+                         TRUE ~ 4)) %>% 
+  filter(Dataset=="Sacks")
+
+
+ggplot() +
+  geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+               fill = "gray90", color="gray40", linewidth=0.3) + 
+  geom_point(data = pop, aes(x=long, y = lat, fill = `Samples (n=41)`),shape = 21, size=2) +
+  coord_fixed(xlim = c(-123, -75),  ylim = c(26, 41.8)) +
+  scale_fill_manual(values = c("dodgerblue2", "goldenrod", "red2"))+
+  xlab("") + ylab("") +
+  theme(panel.grid.minor=element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "top",
+        legend.title = element_text(size=9),
+        panel.background=element_rect(color="white",fill="white",linewidth = 0.5),
+        axis.line=element_line(color="black"),
+        axis.text=element_text(color="black"),
+        axis.ticks=element_line(color="black")) 
+
+
+pop  %>% filter(Deme=="pure") %>%  group_by(`Samples (n=41)`, Sex) %>% count()
+```
+
+split data in half 
+
+```{r subSamples, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width = 7}
+
+ggplot() +
+  geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+               fill = "gray90", color="gray40", linewidth=0.3) + 
+  geom_point(data = subset(pop, Deme=="pure"),  
+             aes(x=long, y = lat, shape=Sex, size=`Depth(x)`), fill="black") +
+  coord_fixed(xlim = c(-123, -75),  ylim = c(26, 41.8)) +
+  scale_shape_manual(values=c(21,24))+
+  xlab("") + ylab("") +
+  theme(panel.grid.minor=element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "top",
+        legend.title = element_text(size=9),
+        panel.background=element_rect(color="white",fill="white",linewidth = 0.5),
+        axis.line=element_line(color="black"),
+        axis.text=element_text(color="black"),
+        axis.ticks=element_line(color="black")) 
+
+#choose samples and create list
+
+```
+
+
+Samples for smc++ (higher depth)
+
+|Region |SRA	        |Sex|State|	Lat.  |  Long.  | Depth |
+| ----- | ----------- | - | --- | ----- | ------- | ----- | 
+|	East  |	SRR24465304	|	M	|	SC	| 33.346|	-81.743	|	26.2  | 
+| East	| SRR24465268	|	F	|	AR	| 35.708|	-92.519	|	7.2   |
+|	East	| SRR24465307	|	M	|	AR	| 34.287|	-91.338	|	6.4   |
+|	East	| SRR24465305	|	M	|	KY	| 37.322|	-84.928	|	6.3   |
+|	East	| SRR24465269	|	M	|	AR	| 33.467|	-92.169	|	6.2   |
+|	East	| SRR24465309	|	F	|	MO	| 37.152|	-91.391	|	6.2   |
+|	West	| SRR24465290	|	M	|	TX	| 29.508|	-103.328|	23.6  |
+|	West	| SRR24465296	|	M	|	CA	| 38.490|	-122.152|	7.7   |
+|	West	| SRR24465294	|	M	|	TX	| 29.924|	-101.992|	6.4   |
+|	West	| SRR24465289	|	M	|	TX	| 30.213|	-102.430|	6.1   |
+|	West	| SRR24465291	|	F	|	TX	| 30.684|	-101.308|	6.1   |
+|	West	| SRR24465287	|	M	|	NV	| 38.821|	-116.494|	5.8   |
+
+
+Samples for empirical analysis
+
+|Region |SRA	        |Sex|State|	Lat.  |  Long.  | Depth |
+| ----- | ----------- | - | --- | ----- | ------- | ----- | 
+| East  |	SRR24465272 | M | TN | 35.543 | -88.856 |  5.7  | 
+| East  |	SRR24465270 | F | AR | 36.052 | -90.973 |  5.6  | 
+| East  |	SRR24465308 | F | MS | 33.937 | -89.337 |  5.1  | 
+| East  |	SRR24465306 | F | AR | 33.588 | -93.391 |  4.9  | 
+| East  |	SRR24465297 | F | MS | 32.766 | -90.388 |  4.8  | 
+| East  |	SRR24465271 | M | AL | 32.248 | -87.791 |  4.8  | 
+| West  |	SRR24465292 | M | TX | 29.561 | -104.372|  5.5  | 
+| West  |	SRR24465283 | F | NM | 33.156 | -104.321|  5.5  | 
+| West  |	SRR24465293 | M | TX | 30.625 | -104.067|  5.5  | 
+| West  |	SRR24465288 | F | NV | 37.459 | -114.460|  5.0  | 
+| West  |	SRR24465285 | M | NM | 34.956 | -103.157|  5.0  | 
+| West  |	SRR24465284 | M | NM | 32.711 | -107.845|  4.9  | 
+
+
+### Genic Regions
+
+create bed file of genes ±1kb from annotation
+
+```{r annotation, eval=FALSE, warning=FALSE,message=FALSE}
+
+# annotation file
+galba <- fread("~/Downloads/galba.gtf.gz")
+
+# chromosome name conversion file 
+chroms <- read_tsv("grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
+  separate(scaf, remove=F, c(NA,NA,NA,NA,NA,"length"))
+
+# write file with chromosome sizes
+chroms %>% select(scaf,length) %>% write_tsv("chromSizes.txt", col_names = F)
+
+# filter annotation for genic regions
+genes <- galba %>% filter(V3=="gene") %>% select(V1,V4,V5)
+
+# add chromosome names to annotation file and remove stuff not mapping to scaffs 1-32
+genescaf <- genes %>% left_join(chroms,by=c("V1"="scaf")) %>% 
+  select(chrom,V4,V5, length)  %>%  na.omit()
+
+# add 1kb to either end of each gene, making sure 
+gene1kb <- genescaf %>% mutate(start=V4-1000, end=V5+1000) %>% 
+  mutate(newstart=case_when(start<0 ~ 1, TRUE ~ start)) %>% 
+  mutate(newend=case_when(end>as.numeric(length) ~ as.numeric(length), TRUE ~ end))
+
+gene1kb %>% select(chrom,newstart,newend) %>% write_tsv("genes1kb.bed", col_names = F)
+
+```
+
+
+
+remove genic regions and compute summary statistics on half of data
+
+
+
+```{bash genic, eval=FALSE}
+
+module load bedtools2
+module load bcftools
+
+bedtools sort -i genes1kb.bed > genicregions.1kb.bed
+
+#removes genic regions
+bcftools view -T ^genicregions.1kb.bed grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz -Oz -o grayfox_mainland_nogenes.vcf.gz 
+
+bcftools index -t grayfox_mainland_nogenes.vcf.gz
+
+#split by chromosome
+bcftools index -s grayfox_mainland_nogenes.vcf.gz | cut -f 1 | while read C; do bcftools view -O z -o split.${C}.vcf.gz grayfox_mainland_nogenes.vcf.gz "${C}" ; done
+
+
+
+## look at fragment size distribution 
+
+
+
+
+```
+
+### Compute Summary Statistics
+
+calculate pi, segregating sites, heterozygosity per site on n=12 empirical samples

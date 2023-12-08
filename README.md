@@ -16,9 +16,13 @@
 ### ![Gray Fox](https://images.phylopic.org/images/098f58b7-4242-4116-ae13-acf132e32dc0/thumbnail/64x64.png) the Gray Fox _Urocyon cinereoargenteus_
 > from the Latin cinereus, meaning “ash-colored,” and argenteus, meaning “silvery”
 
+
+#### [Overview](https://github.com/makopyan/fox/blob/main/steps.md)
+
+
+
 ### ![Island Fox](https://images.phylopic.org/images/f1a044ce-86f4-4395-a85a-ba6dd0e5492c/thumbnail/64x64.png) the Island Fox _Urocyon littoralis_ 
 > in Latin, littoralis means “coastal”
 
 
-#### [VCF summary stats](https://github.com/makopyan/fox/blob/main/variants.md)
 
