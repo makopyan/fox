@@ -79,7 +79,8 @@ genes <- galba %>% filter(V3=="gene") %>% select(V1,V4,V5)
 genescaf <- genes %>% left_join(chroms,by=c("V1"="scaf")) %>% 
   select(chrom,V4,V5, length)  %>%  na.omit()
 
-# add 1kb to either end of each gene, making sure 
+# add 1kb to either end of each gene, 
+## make sure values don't drop below zero or exceed the length of the chromosome
 gene1kb <- genescaf %>% mutate(start=V4-1000, end=V5+1000) %>% 
   mutate(newstart=case_when(start<0 ~ 1, TRUE ~ start)) %>% 
   mutate(newend=case_when(end>as.numeric(length) ~ as.numeric(length), TRUE ~ end))
