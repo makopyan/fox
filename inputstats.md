@@ -102,13 +102,40 @@ bcftools index -t grayfox_mainland_nogenes.vcf.gz
 
 #split by chromosome
 bcftools index -s grayfox_mainland_nogenes.vcf.gz | cut -f 1 | while read C; do bcftools view -O z -o split.${C}.vcf.gz grayfox_mainland_nogenes.vcf.gz "${C}" ; done
-
-
-
-## look at fragment size distribution 
 ```
 
 ### Compute Summary Statistics
 
 calculate pi, segregating sites, heterozygosity per site on n=12
 empirical samples
+
+``` bash
+#!/bin/sh
+#SBATCH --job-name=statsvcf
+#SBATCH --output=/scratch1/marjanak/statsvcf.out
+#SBATCH --error=/scratch1/marjanak/statsvcf.err
+#SBATCH --partition=qcb
+#SBATCH --time=24:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out east6_pi_10kb.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out west6_pi_10kb.out
+```
+
+Average nucleotide diversity 1.8x higher in the east (n=6) compared to
+the west (n=6)
+
+    ## # A tibble: 2 × 2
+    ##   pop       avgpi
+    ##   <chr>     <dbl>
+    ## 1 east  0.000108 
+    ## 2 west  0.0000611
+
+![](inputstats_files/figure-gfm/pi-1.png)<!-- -->
