@@ -284,7 +284,7 @@ ggplot() +
     strip.background=element_rect(fill="gray90"),
     axis.text.x = element_blank()) + 
   geom_hline(yintercept=0.000108,color = "turquoise", size=.5) + 
-  geom_hline(yintercept=0.0000611,color = "magenta", size=.5)
+  geom_hline(yintercept=0.0000611,color = "gold", size=.5)
   
 
 
