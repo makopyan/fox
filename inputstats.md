@@ -112,11 +112,11 @@ empirical samples
 
 ``` bash
 #!/bin/sh
-#SBATCH --job-name=statsvcf
-#SBATCH --output=/scratch1/marjanak/statsvcf.out
-#SBATCH --error=/scratch1/marjanak/statsvcf.err
+#SBATCH --job-name=statsvcfsite
+#SBATCH --output=/scratch1/marjanak/statsvcfsite.out
+#SBATCH --error=/scratch1/marjanak/statsvcfsite.err
 #SBATCH --partition=qcb
-#SBATCH --time=24:00:00
+#SBATCH --time=30:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=8000MB
@@ -125,9 +125,14 @@ empirical samples
 
 module load vcftools
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out east6_pi_10kb.out
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --site-pi --out east6_pi_site.out
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out west6_pi_10kb.out
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --site-pi --out west6_pi_site.out
+
+
+vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --keep east6.txt --snpdensity 10 --out east6_S_10bp.out
+
+vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --keep west6.txt --snpdensity 10 --out west6_S_10bp.out
 ```
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to

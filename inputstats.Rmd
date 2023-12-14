@@ -180,9 +180,39 @@ calculate pi, segregating sites, heterozygosity per site on n=12 empirical sampl
 ```{bash vcftools-stats, eval=FALSE}
 
 #!/bin/sh
-#SBATCH --job-name=statsvcf
-#SBATCH --output=/scratch1/marjanak/statsvcf.out
-#SBATCH --error=/scratch1/marjanak/statsvcf.err
+#SBATCH --job-name=statsvcfsite
+#SBATCH --output=/scratch1/marjanak/statsvcfsite.out
+#SBATCH --error=/scratch1/marjanak/statsvcfsite.err
+#SBATCH --partition=qcb
+#SBATCH --time=30:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --site-pi --out east6_pi_site.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --site-pi --out west6_pi_site.out
+
+
+vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --keep east6.txt --snpdensity 10 --out east6_S_10bp.out
+
+vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --keep west6.txt --snpdensity 10 --out west6_S_10bp.out
+
+
+
+```
+
+```{bash scratch, echo=FALSE, eval=FALSE}
+
+
+#!/bin/sh
+#SBATCH --job-name=sitesvcf
+#SBATCH --output=/scratch1/marjanak/sitesvcf.out
+#SBATCH --error=/scratch1/marjanak/sitesvcf.err
 #SBATCH --partition=qcb
 #SBATCH --time=24:00:00
 #SBATCH --ntasks=1
@@ -193,13 +223,13 @@ calculate pi, segregating sites, heterozygosity per site on n=12 empirical sampl
 
 module load vcftools
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out east6_pi_10kb.out
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --window-pi 10000 --out west6_pi_10kb.out
 
-```
 
-```{bash scratch, echo=FALSE, eval=FALSE}
+
+
+
+
 
 vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --TajimaD 10000 --out east6_tajD_10kb.out
 
@@ -209,7 +239,7 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/M
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6)
 
-```{r pi, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width = 10}
+```{r pi, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
 
 eastpi <- read_tsv("east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
@@ -250,9 +280,12 @@ ggplot() +
     legend.position="none",
     strip.text = element_text(colour = "black", size = 12),
     axis.title.y = element_text(colour = "black", size = 14),   
-    panel.spacing = unit(0.01, "cm"),
+    panel.spacing = unit(0.0, "cm"),
     strip.background=element_rect(fill="gray90"),
-    axis.text.x = element_blank())
+    axis.text.x = element_blank()) + 
+  geom_hline(yintercept=0.000108,color = "turquoise", size=.5) + 
+  geom_hline(yintercept=0.0000611,color = "magenta", size=.5)
+  
 
 
 ```
