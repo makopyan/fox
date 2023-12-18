@@ -145,3 +145,11 @@ the west (n=6)
     ## 2 west  0.0000611
 
 ![](inputstats_files/figure-gfm/pi-1.png)<!-- -->
+
+    ## # A tibble: 2 × 2
+    ##   pop       avgpi
+    ##   <chr>     <dbl>
+    ## 1 east  0.0000800
+    ## 2 west  0.000173
+
+![](inputstats_files/figure-gfm/pi-2.png)<!-- -->

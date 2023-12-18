@@ -288,6 +288,56 @@ ggplot() +
   
 
 
+
+
+
+cfeastpi <- read_tsv("cf_east6_pi_10kb.out.windowed.pi") %>%
+  mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
+  mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
+
+
+cfwestpi <- read_tsv("cf_west6_pi_10kb.out.windowed.pi") %>%
+  mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
+  mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
+
+
+cfallpi <- bind_rows("east"=cfeastpi,"west"=cfwestpi,.id = "pop")
+
+cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
+
+
+ggplot() + 
+  geom_line(data=cfallpi, aes(x=chr_position, y=PI, color=pop), size=0.15) +
+  scale_alpha_manual(values = rep(c(1, 0.7), 100)) +
+  scale_color_manual(values = c("#045acb", "#cf1a10"))+
+  xlab("Position (Mbp)") +
+  facet_grid(cols = vars(CHROM), rows=vars(pop),
+             space = "free_x",
+             scales = "free_x") +     
+  ylab(expression(pi))+
+  #scale_y_continuous(limits = c(0,0.025), breaks = c(0, 0.01, 0.02))+
+  theme(
+    panel.grid.minor=element_blank(),
+    panel.grid.major=element_blank(),
+    panel.background=element_blank(),
+    axis.text = element_text(colour = "black", size = 12),
+    axis.line.y = element_line(colour = "black", linewidth = 0.5),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_line(colour = "black", size = 0.5),
+    axis.ticks.length = unit(0.2, "cm"),
+    axis.title.x = element_text(colour = "black", size = 14),
+    legend.position="none",
+    strip.text = element_text(colour = "black", size = 12),
+    axis.title.y = element_text(colour = "black", size = 14),   
+    panel.spacing = unit(0.0, "cm"),
+    strip.background=element_rect(fill="gray90"),
+    axis.text.x = element_blank()) + 
+  geom_hline(yintercept=0.0000800,color = "turquoise", size=.5) + 
+  geom_hline(yintercept=0.000173,color = "gold", size=.5)
+  
+
+
 ```
 
 
