@@ -237,7 +237,9 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/M
 ```
 
 
-Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6)
+Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6) when mapped to grayfox genome
+
+Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east (n=6) when mapped to canfam3.1
 
 ```{r pi, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
 
@@ -251,7 +253,10 @@ westpi <- read_tsv("west6_pi_10kb.out.windowed.pi") %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
 
-allpi <- bind_rows("east"=eastpi,"west"=westpi,.id = "pop")
+allpi <- bind_rows("east"=eastpi,"west"=westpi,.id = "pop") %>%
+  mutate(avg=case_when(pop=="east" ~ 0.000108,
+                       TRUE ~ 0.0000611))
+
 
 allpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
 
@@ -282,9 +287,8 @@ ggplot() +
     axis.title.y = element_text(colour = "black", size = 14),   
     panel.spacing = unit(0.0, "cm"),
     strip.background=element_rect(fill="gray90"),
-    axis.text.x = element_blank()) + 
-  geom_hline(yintercept=0.000108,color = "turquoise", size=.5) + 
-  geom_hline(yintercept=0.0000611,color = "gold", size=.5)
+    axis.text.x = element_blank())  + 
+    geom_hline(data = allpi, aes(yintercept = avg), linetype="dashed")
   
 
 
@@ -301,7 +305,9 @@ cfwestpi <- read_tsv("cf_west6_pi_10kb.out.windowed.pi") %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
 
-cfallpi <- bind_rows("east"=cfeastpi,"west"=cfwestpi,.id = "pop")
+cfallpi <- bind_rows("east"=cfeastpi,"west"=cfwestpi,.id = "pop") %>%
+  mutate(avg=case_when(pop=="east" ~ 0.0000800,
+                       TRUE ~ 0.000173))
 
 cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
 
@@ -333,8 +339,8 @@ ggplot() +
     panel.spacing = unit(0.0, "cm"),
     strip.background=element_rect(fill="gray90"),
     axis.text.x = element_blank()) + 
-  geom_hline(yintercept=0.0000800,color = "turquoise", size=.5) + 
-  geom_hline(yintercept=0.000173,color = "gold", size=.5)
+  geom_hline(data = cfallpi, aes(yintercept = avg), linetype="dashed")
+  
   
 
 

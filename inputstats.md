@@ -136,7 +136,10 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 ```
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to
-the west (n=6)
+the west (n=6) when mapped to grayfox genome
+
+Average nucleotide diversity 2.2x higher in the west (n=6) compared to
+the east (n=6) when mapped to canfam3.1
 
     ## # A tibble: 2 × 2
     ##   pop       avgpi
