@@ -19,9 +19,7 @@ figure out number of non-hybrid samples *n=26 (14 east + 12 west)*
     ## 3 west (12)        F         3
     ## 4 west (12)        M         9
 
-split data in half
-
-![](inputstats_files/figure-gfm/subSamples-1.png)<!-- -->
+Split data in half:
 
 Samples for smc++ (higher depth)
 
@@ -40,7 +38,7 @@ Samples for smc++ (higher depth)
 | West   | SRR24465291 | F   | TX    | 30.684 | -101.308 | 6.1   |
 | West   | SRR24465287 | M   | NV    | 38.821 | -116.494 | 5.8   |
 
-Samples for empirical analysis
+Samples for empirical analysis (lower depth)
 
 | Region | SRA         | Sex | State | Lat.   | Long.    | Depth |
 |--------|-------------|-----|-------|--------|----------|-------|
@@ -60,6 +58,13 @@ Samples for empirical analysis
 ### Genic Regions
 
 create bed file of genes ±1kb from annotation
+
+<details>
+<summary>
+Show code
+</summary>
+
+<br>
 
 ``` r
 # annotation file
@@ -88,7 +93,16 @@ gene1kb <- genescaf %>% mutate(start=V4-1000, end=V5+1000) %>%
 gene1kb %>% select(chrom,newstart,newend) %>% write_tsv("genes1kb.bed", col_names = F)
 ```
 
+</details>
+
 remove genic regions and compute summary statistics on half of data
+
+<details>
+<summary>
+Show code
+</summary>
+
+<br>
 
 ``` bash
 module load bedtools2
@@ -105,10 +119,19 @@ bcftools index -t grayfox_mainland_nogenes.vcf.gz
 bcftools index -s grayfox_mainland_nogenes.vcf.gz | cut -f 1 | while read C; do bcftools view -O z -o split.${C}.vcf.gz grayfox_mainland_nogenes.vcf.gz "${C}" ; done
 ```
 
+</details>
+
 ### Compute Summary Statistics
 
 calculate pi, segregating sites, heterozygosity per site on n=12
 empirical samples
+
+<details>
+<summary>
+Show code
+</summary>
+
+<br>
 
 ``` bash
 #!/bin/sh
@@ -135,11 +158,12 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --keep west6.txt --snpdensity 10 --out west6_S_10bp.out
 ```
 
+</details>
+
+### Mapped to Gray Fox Genome
+
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to
 the west (n=6) when mapped to grayfox genome
-
-Average nucleotide diversity 2.2x higher in the west (n=6) compared to
-the east (n=6) when mapped to canfam3.1
 
     ## # A tibble: 2 × 2
     ##   pop       avgpi
@@ -149,10 +173,15 @@ the east (n=6) when mapped to canfam3.1
 
 ![](inputstats_files/figure-gfm/pi-1.png)<!-- -->
 
+### Mapped to Canfam3.1
+
+Average nucleotide diversity 2.2x higher in the west (n=6) compared to
+the east (n=6) when mapped to canfam3.1
+
     ## # A tibble: 2 × 2
     ##   pop       avgpi
     ##   <chr>     <dbl>
     ## 1 east  0.0000800
     ## 2 west  0.000173
 
-![](inputstats_files/figure-gfm/pi-2.png)<!-- -->
+![](inputstats_files/figure-gfm/pi-cf-1.png)<!-- -->

@@ -54,31 +54,7 @@ ggplot() +
 pop  %>% filter(Deme=="pure") %>%  group_by(`Samples (n=41)`, Sex) %>% count()
 ```
 
-split data in half 
-
-```{r subSamples, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width = 7}
-
-ggplot() +
-  geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
-               fill = "gray90", color="gray40", linewidth=0.3) + 
-  geom_point(data = subset(pop, Deme=="pure"),  
-             aes(x=long, y = lat, shape=Sex, size=`Depth(x)`), fill="black") +
-  coord_fixed(xlim = c(-123, -75),  ylim = c(26, 41.8)) +
-  scale_shape_manual(values=c(21,24))+
-  xlab("") + ylab("") +
-  theme(panel.grid.minor=element_blank(),
-        panel.grid.major = element_blank(),
-        legend.position = "top",
-        legend.title = element_text(size=9),
-        panel.background=element_rect(color="white",fill="white",linewidth = 0.5),
-        axis.line=element_line(color="black"),
-        axis.text=element_text(color="black"),
-        axis.ticks=element_line(color="black")) 
-
-#choose samples and create list
-
-```
-
+Split data in half:
 
 Samples for smc++ (higher depth)
 
@@ -98,7 +74,7 @@ Samples for smc++ (higher depth)
 |	West	| SRR24465287	|	M	|	NV	| 38.821|	-116.494|	5.8   |
 
 
-Samples for empirical analysis
+Samples for empirical analysis (lower depth)
 
 |Region |SRA	        |Sex|State|	Lat.  |  Long.  | Depth |
 | ----- | ----------- | - | --- | ----- | ------- | ----- | 
@@ -120,6 +96,9 @@ Samples for empirical analysis
 
 create bed file of genes ±1kb from annotation
 
+<details>
+<summary>Show code</summary>
+<br>
 ```{r annotation, eval=FALSE, warning=FALSE,message=FALSE}
 
 # annotation file
@@ -148,13 +127,16 @@ gene1kb <- genescaf %>% mutate(start=V4-1000, end=V5+1000) %>%
 gene1kb %>% select(chrom,newstart,newend) %>% write_tsv("genes1kb.bed", col_names = F)
 
 ```
+</details>
+
 
 
 
 remove genic regions and compute summary statistics on half of data
 
-
-
+<details>
+<summary>Show code</summary>
+<br>
 ```{bash genic, eval=FALSE}
 
 module load bedtools2
@@ -171,12 +153,15 @@ bcftools index -t grayfox_mainland_nogenes.vcf.gz
 bcftools index -s grayfox_mainland_nogenes.vcf.gz | cut -f 1 | while read C; do bcftools view -O z -o split.${C}.vcf.gz grayfox_mainland_nogenes.vcf.gz "${C}" ; done
 
 ```
+</details>
 
 ### Compute Summary Statistics
 
 calculate pi, segregating sites, heterozygosity per site on n=12 empirical samples
 
-
+<details>
+<summary>Show code</summary>
+<br>
 ```{bash vcftools-stats, eval=FALSE}
 
 #!/bin/sh
@@ -205,6 +190,9 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 
 
 ```
+</details>
+
+
 
 ```{bash scratch, echo=FALSE, eval=FALSE}
 
@@ -223,26 +211,18 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 
 module load vcftools
 
-
-
-
-
-
-
-
-
 vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --TajimaD 10000 --out east6_tajD_10kb.out
 
 vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.gvcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --TajimaD 10000 --out west6_tajD_10kb.out
 ```
 
 
+### Mapped to Gray Fox Genome
+
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6) when mapped to grayfox genome
 
-Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east (n=6) when mapped to canfam3.1
 
 ```{r pi, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
-
 eastpi <- read_tsv("east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
@@ -264,7 +244,7 @@ allpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
 ggplot() + 
   geom_line(data=allpi, aes(x=chr_position, y=PI, color=pop), size=0.15) +
   scale_alpha_manual(values = rep(c(1, 0.7), 100)) +
-  scale_color_manual(values = c("#045acb", "#cf1a10"))+
+  scale_color_manual(values = c("#4d9aff", "#f2675f"))+
   xlab("Position (Mbp)") +
   facet_grid(cols = vars(CHROM), rows=vars(pop),
              space = "free_x",
@@ -282,19 +262,24 @@ ggplot() +
     axis.ticks.y = element_line(colour = "black", size = 0.5),
     axis.ticks.length = unit(0.2, "cm"),
     axis.title.x = element_text(colour = "black", size = 14),
-    legend.position="none",
+    legend.position="top",
+    legend.title = element_blank(),
     strip.text = element_text(colour = "black", size = 12),
     axis.title.y = element_text(colour = "black", size = 14),   
     panel.spacing = unit(0.0, "cm"),
     strip.background=element_rect(fill="gray90"),
     axis.text.x = element_blank())  + 
     geom_hline(data = allpi, aes(yintercept = avg), linetype="dashed")
-  
+```
 
 
+### Mapped to Canfam3.1
 
 
+Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east (n=6) when mapped to canfam3.1
 
+
+```{r pi-cf, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
 cfeastpi <- read_tsv("cf_east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
@@ -315,7 +300,7 @@ cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
 ggplot() + 
   geom_line(data=cfallpi, aes(x=chr_position, y=PI, color=pop), size=0.15) +
   scale_alpha_manual(values = rep(c(1, 0.7), 100)) +
-  scale_color_manual(values = c("#045acb", "#cf1a10"))+
+  scale_color_manual(values = c("#4d9aff", "#f2675f"))+
   xlab("Position (Mbp)") +
   facet_grid(cols = vars(CHROM), rows=vars(pop),
              space = "free_x",
@@ -333,7 +318,8 @@ ggplot() +
     axis.ticks.y = element_line(colour = "black", size = 0.5),
     axis.ticks.length = unit(0.2, "cm"),
     axis.title.x = element_text(colour = "black", size = 14),
-    legend.position="none",
+    legend.position="top",
+    legend.title = element_blank(),
     strip.text = element_text(colour = "black", size = 12),
     axis.title.y = element_text(colour = "black", size = 14),   
     panel.spacing = unit(0.0, "cm"),
