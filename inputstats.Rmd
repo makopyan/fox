@@ -130,7 +130,7 @@ gene1kb %>% select(chrom,newstart,newend) %>% write_tsv("genes1kb.bed", col_name
 </details>
 
 
-
+<br>
 
 remove genic regions and compute summary statistics on half of data
 
@@ -217,6 +217,8 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/M
 ```
 
 
+<br>
+
 ### Mapped to Gray Fox Genome
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6) when mapped to grayfox genome
@@ -238,7 +240,7 @@ allpi <- bind_rows("east"=eastpi,"west"=westpi,.id = "pop") %>%
                        TRUE ~ 0.0000611))
 
 
-allpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
+allpi %>% group_by(pop) %>% summarise(avgpi=mean(PI), medpi=median(PI), sdpi=sd(PI))
 
 
 ggplot() + 
@@ -279,7 +281,7 @@ ggplot() +
 Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east (n=6) when mapped to canfam3.1
 
 
-```{r pi-cf, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
+```{r pi-cf, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 11}
 cfeastpi <- read_tsv("cf_east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
@@ -294,7 +296,7 @@ cfallpi <- bind_rows("east"=cfeastpi,"west"=cfwestpi,.id = "pop") %>%
   mutate(avg=case_when(pop=="east" ~ 0.0000800,
                        TRUE ~ 0.000173))
 
-cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI, notation="sci"))
+cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI), medpi=median(PI), sdpi=sd(PI))
 
 
 ggplot() + 
@@ -327,12 +329,57 @@ ggplot() +
     axis.text.x = element_blank()) + 
   geom_hline(data = cfallpi, aes(yintercept = avg), linetype="dashed")
   
-  
-
-
 ```
 
 
 
+<details>
+<summary>Show code</summary>
+<br>
+```{bash vcfhet, eval=FALSE}
+
+#!/bin/sh
+#SBATCH --job-name=vcfhet
+#SBATCH --output=/scratch1/marjanak/vcfhet.out
+#SBATCH --error=/scratch1/marjanak/vcfhet.err
+#SBATCH --partition=qcb
+#SBATCH --time=20:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep empirical6.txt --exclude-bed genicregions.1kb.bed --het --out grayfox.het
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep empirical6.txt --exclude-bed genicregions.1kb.bed --het --out canfam3.1.het
+
+
+```
+</details>
+
+Average heterozygosity (number of observed heterozygous sites divided by total number of variant sites) across samples in the empirical dataset (n=12)
+
+```{r het, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width = 6}
+
+het <- read_tsv("het.het") 
+
+hettab <- het %>% group_by(GENOME,POP) %>% summarise(avghet=mean(Het), medhet=median(Het), sdhet=sd(Het))
+
+hettab
+
+ggplot(hettab,aes(x=interaction(POP,GENOME), y=avghet, fill=POP)) +
+  geom_col()+ 
+  geom_errorbar(aes(ymin=avghet-sdhet, ymax=avghet+sdhet), width=0.2) +
+  scale_fill_manual(values = c("#4d9aff", "#f2675f"))+
+  theme_bw()+
+  ylab("Heterozygosity ± SD")+
+  theme(axis.title.x = element_blank(),
+        axis.text=element_text(color="black",size=10),
+        legend.position = "none")
+
+```
 
 

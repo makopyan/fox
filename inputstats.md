@@ -95,6 +95,8 @@ gene1kb %>% select(chrom,newstart,newend) %>% write_tsv("genes1kb.bed", col_name
 
 </details>
 
+<br>
+
 remove genic regions and compute summary statistics on half of data
 
 <details>
@@ -160,16 +162,18 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 
 </details>
 
+<br>
+
 ### Mapped to Gray Fox Genome
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to
 the west (n=6) when mapped to grayfox genome
 
-    ## # A tibble: 2 × 2
-    ##   pop       avgpi
-    ##   <chr>     <dbl>
-    ## 1 east  0.000108 
-    ## 2 west  0.0000611
+    ## # A tibble: 2 × 4
+    ##   pop       avgpi     medpi      sdpi
+    ##   <chr>     <dbl>     <dbl>     <dbl>
+    ## 1 east  0.000108  0.0000712 0.000114 
+    ## 2 west  0.0000611 0.0000333 0.0000778
 
 ![](inputstats_files/figure-gfm/pi-1.png)<!-- -->
 
@@ -178,10 +182,54 @@ the west (n=6) when mapped to grayfox genome
 Average nucleotide diversity 2.2x higher in the west (n=6) compared to
 the east (n=6) when mapped to canfam3.1
 
-    ## # A tibble: 2 × 2
-    ##   pop       avgpi
-    ##   <chr>     <dbl>
-    ## 1 east  0.0000800
-    ## 2 west  0.000173
+    ## # A tibble: 2 × 4
+    ##   pop       avgpi     medpi      sdpi
+    ##   <chr>     <dbl>     <dbl>     <dbl>
+    ## 1 east  0.0000800 0.0000606 0.0000731
+    ## 2 west  0.000173  0.000135  0.000144
 
 ![](inputstats_files/figure-gfm/pi-cf-1.png)<!-- -->
+
+<details>
+<summary>
+Show code
+</summary>
+
+<br>
+
+``` bash
+#!/bin/sh
+#SBATCH --job-name=vcfhet
+#SBATCH --output=/scratch1/marjanak/vcfhet.out
+#SBATCH --error=/scratch1/marjanak/vcfhet.err
+#SBATCH --partition=qcb
+#SBATCH --time=20:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep empirical6.txt --exclude-bed genicregions.1kb.bed --het --out grayfox.het
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep empirical6.txt --exclude-bed genicregions.1kb.bed --het --out canfam3.1.het
+```
+
+</details>
+
+Average heterozygosity (number of observed heterozygous sites divided by
+total number of variant sites) across samples in the empirical dataset
+(n=12)
+
+    ## # A tibble: 4 × 5
+    ## # Groups:   GENOME [2]
+    ##   GENOME    POP   avghet medhet   sdhet
+    ##   <chr>     <chr>  <dbl>  <dbl>   <dbl>
+    ## 1 canfam3.1 EAST  0.0550 0.0545 0.00346
+    ## 2 canfam3.1 WEST  0.153  0.153  0.00824
+    ## 3 grayfox   EAST  0.233  0.229  0.0125 
+    ## 4 grayfox   WEST  0.0533 0.0552 0.00693
+
+![](inputstats_files/figure-gfm/het-1.png)<!-- -->
