@@ -192,6 +192,39 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 ```
 </details>
 
+<br>
+
+SNP Density
+
+<details>
+<summary>Show code</summary>
+<br>
+```{bash vcfsnpden, eval=FALSE}
+
+#!/bin/sh
+#SBATCH --job-name=vcfsnpden
+#SBATCH --output=/scratch1/marjanak/vcfsnpden.out
+#SBATCH --error=/scratch1/marjanak/vcfsnpden.err
+#SBATCH --partition=qcb
+#SBATCH --time=30:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_gf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_gf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_cf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_cf.out
+
+```
+</details>
 
 
 ```{bash scratch, echo=FALSE, eval=FALSE}
@@ -229,19 +262,15 @@ eastpi <- read_tsv("east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
-
 westpi <- read_tsv("west6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
-
 
 allpi <- bind_rows("east"=eastpi,"west"=westpi,.id = "pop") %>%
   mutate(avg=case_when(pop=="east" ~ 0.000108,
                        TRUE ~ 0.0000611))
 
-
 allpi %>% group_by(pop) %>% summarise(avgpi=mean(PI), medpi=median(PI), sdpi=sd(PI))
-
 
 ggplot() + 
   geom_line(data=allpi, aes(x=chr_position, y=PI, color=pop), size=0.15) +
@@ -286,18 +315,15 @@ cfeastpi <- read_tsv("cf_east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
-
 cfwestpi <- read_tsv("cf_west6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
-
 
 cfallpi <- bind_rows("east"=cfeastpi,"west"=cfwestpi,.id = "pop") %>%
   mutate(avg=case_when(pop=="east" ~ 0.0000800,
                        TRUE ~ 0.000173))
 
 cfallpi %>% group_by(pop) %>% summarise(avgpi=mean(PI), medpi=median(PI), sdpi=sd(PI))
-
 
 ggplot() + 
   geom_line(data=cfallpi, aes(x=chr_position, y=PI, color=pop), size=0.15) +
@@ -328,7 +354,6 @@ ggplot() +
     strip.background=element_rect(fill="gray90"),
     axis.text.x = element_blank()) + 
   geom_hline(data = cfallpi, aes(yintercept = avg), linetype="dashed")
-  
 ```
 
 
@@ -383,3 +408,22 @@ ggplot(hettab,aes(x=interaction(POP,GENOME), y=avghet, fill=POP)) +
 ```
 
 
+Segregating sites
+
+```{r segsites, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width = 6}
+nvargf <- allpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
+
+nvarcf <- cfallpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
+
+nvar <- bind_rows("gf"=nvargf,"cf"=nvarcf,.id = "genome")
+
+ggplot(nvar,aes(x=interaction(pop,genome), y=var, fill=pop)) +
+  geom_col() + 
+  geom_text(aes(y = var + 15000, label = var))+ 
+  scale_fill_manual(values = c("#4d9aff", "#f2675f"))+
+  theme_bw()+
+  ylab("Variants")+
+  theme(axis.title.x = element_blank(),
+        axis.text=element_text(color="black",size=10),
+        legend.position = "none")
+```

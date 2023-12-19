@@ -164,6 +164,43 @@ vcftools --gzvcf /project/jazlynmo_738/Maria/grayfox_mainland_nogenes.vcf.gz --k
 
 <br>
 
+SNP Density
+
+<details>
+<summary>
+Show code
+</summary>
+
+<br>
+
+``` bash
+#!/bin/sh
+#SBATCH --job-name=vcfsnpden
+#SBATCH --output=/scratch1/marjanak/vcfsnpden.out
+#SBATCH --error=/scratch1/marjanak/vcfsnpden.err
+#SBATCH --partition=qcb
+#SBATCH --time=30:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8000MB
+#SBATCH --mail-type=END,FAIL # notifications for job done & fail
+#SBATCH --mail-user=marjanak@usc.edu
+
+module load vcftools
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_gf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_gf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_cf.out
+
+vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_cf.out
+```
+
+</details>
+
+<br>
+
 ### Mapped to Gray Fox Genome
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to
@@ -233,3 +270,7 @@ total number of variant sites) across samples in the empirical dataset
     ## 4 grayfox   WEST  0.0533 0.0552 0.00693
 
 ![](inputstats_files/figure-gfm/het-1.png)<!-- -->
+
+Segregating sites
+
+![](inputstats_files/figure-gfm/segsites-1.png)<!-- -->
