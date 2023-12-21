@@ -276,4 +276,28 @@ total number of variant sites) across samples in the empirical dataset
 
 Segregating sites
 
+\~15M SNPs when mapped to Canfam3.1 vs \~350K SNPs when mapped to
+Grayfox
+
+pop values are averaged across n=6 individuals
+
+the majority of SNPs are homozygous for the non-reference allele
+
+number of homozygous reference and heterozygous alleles higher in the
+west when mapped to Camfam3.1 but higher in the east when mapped to
+Grayfox
+
+Grayfox genome from an eastern individual, hence lowest number of
+non-reference alleles in the east
+
 ![](inputstats_files/figure-gfm/segsites-1.png)<!-- -->
+
+    ##   pop   genome avgnRefHom avgnNonRefHom avgnHets    Total
+    ##  east canfam31      19802      15084762    44963 15149527
+    ##  east canfam31      0.13%        99.57%    0.30%         
+    ##  west canfam31      70028      15034369   125457 15229854
+    ##  west canfam31      0.46%        98.72%    0.82%         
+    ##  east  grayfox      38337        239926    60696   338959
+    ##  east  grayfox     11.31%        70.78%   17.91%         
+    ##  west  grayfox       5671        322639    14030   342340
+    ##  west  grayfox      1.66%        94.25%    4.10%

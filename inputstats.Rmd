@@ -415,7 +415,19 @@ ggplot(hettab,aes(x=interaction(POP,GENOME), y=avghet, fill=POP)) +
 
 Segregating sites
 
+~15M SNPs when mapped to Canfam3.1 vs ~350K SNPs when mapped to Grayfox
+
+pop values are averaged across n=6 individuals
+
+the majority of SNPs are homozygous for the non-reference allele 
+
+number of homozygous reference and heterozygous alleles higher in the west when mapped to Camfam3.1 but higher in the east when mapped to Grayfox
+
+Grayfox genome from an eastern individual, hence lowest number of non-reference alleles in the east
+
+
 ```{r segsites, warning=FALSE, message=FALSE, echo=FALSE, fig.height=7, fig.width = 6}
+
 nvargf <- allpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
 
 nvarcf <- cfallpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
@@ -441,4 +453,31 @@ ggplot(snpgrp,aes(x=SNPs, y=count, fill=pop)) +
         axis.text=element_text(color="black",size=10),
         legend.position = "none")+
   facet_wrap(~genome, scales="free",ncol=1)
+
+library(scales)
+library(janitor)
+
+snpper <- snpgrp %>% 
+  group_by(pop,genome) %>% 
+  mutate(prop = count/sum(count)) %>%  
+  mutate(labels = scales::percent(prop, accuracy=0.01)) %>% 
+  mutate(new=paste(count,labels,sep=" "))
+
+counts <- snpper %>% select(pop,genome,SNPs,count) %>% 
+  pivot_wider(names_from=SNPs,values_from=c(count)) %>% 
+  arrange(genome) %>% adorn_totals(where="col") %>% mutate_if(is.integer, as.character)
+
+
+perc <- snpper %>% select(pop,genome,SNPs,labels) %>% 
+  pivot_wider(names_from=SNPs,values_from=c(labels)) %>% 
+  arrange(genome) 
+
+
+snpcounts <- bind_rows(counts,perc) %>% arrange(genome,pop) %>%
+  mutate(across(everything(), ~ replace(.x, is.na(.x), "")))
+
+
+snpcounts
+
+
 ```
