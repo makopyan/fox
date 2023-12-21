@@ -160,7 +160,7 @@ bcftools index -s grayfox_mainland_nogenes.vcf.gz | cut -f 1 | while read C; do 
 calculate pi, segregating sites, heterozygosity per site on n=12 empirical samples
 
 
-Nucleotide diversity (pi) by site
+## Nucleotide diversity
 
 <details>
 <summary>Show code</summary>
@@ -218,7 +218,9 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/M
 
 > For genome comparisons, pi calculated in 10kb windows
 
-### Mapped to Gray Fox Genome
+
+
+#### Mapped to Gray Fox Genome
 
 Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west (n=6) when mapped to grayfox genome
 
@@ -270,7 +272,7 @@ ggplot() +
 ```
 
 
-### Mapped to Canfam3.1
+#### Mapped to Canfam3.1
 
 
 Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east (n=6) when mapped to canfam3.1
@@ -322,6 +324,7 @@ ggplot() +
   geom_hline(data = cfallpi, aes(yintercept = avg), linetype="dashed")
 ```
 
+## Heterozygosity
 
 Average heterozygosity (number of observed heterozygous sites divided by total number of variant sites) across samples in the empirical dataset (n=12)
 
@@ -375,7 +378,9 @@ ggplot(hettab,aes(x=interaction(POP,GENOME), y=avghet, fill=POP)) +
 ```
 <br>
 
-Segregating sites
+
+## Segregating sites
+
 
 <details>
 <summary>Show code</summary>
