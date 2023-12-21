@@ -202,9 +202,9 @@ SNP Density
 ```{bash vcfsnpden, eval=FALSE}
 
 #!/bin/sh
-#SBATCH --job-name=vcfsnpden
-#SBATCH --output=/scratch1/marjanak/vcfsnpden.out
-#SBATCH --error=/scratch1/marjanak/vcfsnpden.err
+#SBATCH --job-name=bcfsnpden
+#SBATCH --output=/scratch1/marjanak/bcfsnpden.out
+#SBATCH --error=/scratch1/marjanak/bcfsnpden.err
 #SBATCH --partition=qcb
 #SBATCH --time=30:00:00
 #SBATCH --ntasks=1
@@ -213,15 +213,20 @@ SNP Density
 #SBATCH --mail-type=END,FAIL # notifications for job done & fail
 #SBATCH --mail-user=marjanak@usc.edu
 
-module load vcftools
+module load bcftools
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_gf.out
+bcftools stats -s SRR24465270,SRR24465271,SRR24465272,SRR24465297,SRR24465306,SRR24465308 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz 
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_gf.out
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_cf.out
+bcftools stats -s SRR24465283,SRR24465284,SRR24465285,SRR24465288,SRR24465292,SRR24465293 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz 
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_cf.out
+
+bcftools stats -s SRR24465270,SRR24465271,SRR24465272,SRR24465297,SRR24465306,SRR24465308 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz
+
+
+bcftools stats -s SRR24465283,SRR24465284,SRR24465285,SRR24465288,SRR24465292,SRR24465293 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz
+
+
 
 ```
 </details>
@@ -410,20 +415,30 @@ ggplot(hettab,aes(x=interaction(POP,GENOME), y=avghet, fill=POP)) +
 
 Segregating sites
 
-```{r segsites, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width = 6}
+```{r segsites, warning=FALSE, message=FALSE, echo=FALSE, fig.height=7, fig.width = 6}
 nvargf <- allpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
 
 nvarcf <- cfallpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
 
 nvar <- bind_rows("gf"=nvargf,"cf"=nvarcf,.id = "genome")
 
-ggplot(nvar,aes(x=interaction(pop,genome), y=var, fill=pop)) +
-  geom_col() + 
-  geom_text(aes(y = var + 15000, label = var))+ 
+
+snps <- read_tsv("snps.txt")
+
+snpgrp <- snps %>% group_by(pop,genome) %>% 
+  summarise(avgnRefHom=mean(nRefHom),avgnNonRefHom=mean(nNonRefHom),avgnHets=mean(nHets)) %>% 
+  pivot_longer(cols = starts_with("avg"), names_to = "SNPs", values_to="count") %>% mutate(count=as.integer(count))
+
+
+ggplot(snpgrp,aes(x=SNPs, y=count, fill=pop)) +
+  geom_col(position="dodge") + 
+  geom_text(data=subset(snpgrp,genome=="canfam31"), aes(y=-1000000,label = count),size=3.5,position = position_dodge(width = 1))+ 
+    geom_text(data=subset(snpgrp,genome=="grayfox"), aes(y=-20000,label = count),size=3.5,position = position_dodge(width = 1))+ 
   scale_fill_manual(values = c("#4d9aff", "#f2675f"))+
   theme_bw()+
   ylab("Variants")+
   theme(axis.title.x = element_blank(),
         axis.text=element_text(color="black",size=10),
-        legend.position = "none")
+        legend.position = "none")+
+  facet_wrap(~genome, scales="free",ncol=1)
 ```

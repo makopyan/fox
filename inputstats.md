@@ -175,9 +175,9 @@ Show code
 
 ``` bash
 #!/bin/sh
-#SBATCH --job-name=vcfsnpden
-#SBATCH --output=/scratch1/marjanak/vcfsnpden.out
-#SBATCH --error=/scratch1/marjanak/vcfsnpden.err
+#SBATCH --job-name=bcfsnpden
+#SBATCH --output=/scratch1/marjanak/bcfsnpden.out
+#SBATCH --error=/scratch1/marjanak/bcfsnpden.err
 #SBATCH --partition=qcb
 #SBATCH --time=30:00:00
 #SBATCH --ntasks=1
@@ -186,15 +186,18 @@ Show code
 #SBATCH --mail-type=END,FAIL # notifications for job done & fail
 #SBATCH --mail-user=marjanak@usc.edu
 
-module load vcftools
+module load bcftools
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_gf.out
+bcftools stats -s SRR24465270,SRR24465271,SRR24465272,SRR24465297,SRR24465306,SRR24465308 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz 
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_gf.out
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep east6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out east6_SNP_10kb_cf.out
+bcftools stats -s SRR24465283,SRR24465284,SRR24465285,SRR24465288,SRR24465292,SRR24465293 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz 
 
-vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz --keep west6.txt --exclude-bed genicregions.1kb.bed --SNPdensity 10000 --out west6_SNP_10kb_cf.out
+
+bcftools stats -s SRR24465270,SRR24465271,SRR24465272,SRR24465297,SRR24465306,SRR24465308 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz
+
+
+bcftools stats -s SRR24465283,SRR24465284,SRR24465285,SRR24465288,SRR24465292,SRR24465293 -T ^genicregions.1kb.bed /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/Canfam3.1_filtered.renameChroms.Mainland.ACgr61_DPgr165lt500.vcf.gz
 ```
 
 </details>
