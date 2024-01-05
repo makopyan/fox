@@ -1,0 +1,8 @@
+east	west	count.gf	perc.gf	count.cf	perc.cf
+polymorphic	fixed der	208793	58.4%	151516	1.3%
+fixed der	fixed der	73459	20.5%	11139465	94.4%
+polymorphic	polymorphic	60901	17.0%	57885	0.5%
+fixed der	polymorphic	14490	4.1%	456703	3.9%
+fixed anc	fixed der	5	0.0%	9	0.0%
+fixed anc	polymorphic	1	0.0%	1	0.0%
+Total	-	357649	-	11805579	-

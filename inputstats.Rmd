@@ -1,7 +1,8 @@
 ---
 title: "input"
-output: github_document
-always_allow_html: true
+output: 
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -105,7 +106,7 @@ create bed file of genes ±1kb from annotation
 galba <- fread("~/Downloads/galba.gtf.gz")
 
 # chromosome name conversion file 
-chroms <- read_tsv("grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
+chroms <- read_tsv("inputstats_files/grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
   separate(scaf, remove=F, c(NA,NA,NA,NA,NA,"length"))
 
 # write file with chromosome sizes
@@ -226,11 +227,11 @@ Average nucleotide diversity 1.8x higher in the east (n=6) compared to the west 
 
 
 ```{r pi, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 10}
-eastpi <- read_tsv("east6_pi_10kb.out.windowed.pi") %>%
+eastpi <- read_tsv("inputstats_files/east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
-westpi <- read_tsv("west6_pi_10kb.out.windowed.pi") %>%
+westpi <- read_tsv("inputstats_files/west6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
@@ -279,11 +280,11 @@ Average nucleotide diversity 2.2x higher in the west (n=6) compared to the east 
 
 
 ```{r pi-cf, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width = 11}
-cfeastpi <- read_tsv("cf_east6_pi_10kb.out.windowed.pi") %>%
+cfeastpi <- read_tsv("inputstats_files/cf_east6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
-cfwestpi <- read_tsv("cf_west6_pi_10kb.out.windowed.pi") %>%
+cfwestpi <- read_tsv("inputstats_files/cf_west6_pi_10kb.out.windowed.pi") %>%
   mutate(chr_position = ((BIN_START + BIN_END)/2)/1000000) %>%
   mutate(CHROM=as.numeric(str_remove(CHROM, "chr"))) 
 
@@ -359,7 +360,7 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Ma
 
 ```{r het, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width = 6}
 
-het <- read_tsv("het.het") 
+het <- read_tsv("inputstats_files/het.het") 
 
 hettab <- het %>% group_by(GENOME,POP) %>% summarise(avghet=mean(Het), medhet=median(Het), sdhet=sd(Het))
 
@@ -439,7 +440,7 @@ nvarcf <- cfallpi %>% group_by(pop) %>% summarise(var=sum(N_VARIANTS))
 nvar <- bind_rows("gf"=nvargf,"cf"=nvarcf,.id = "genome")
 
 
-snps <- read_tsv("snps.txt")
+snps <- read_tsv("inputstats_files/snps.txt")
 
 snpgrp <- snps %>% group_by(pop,genome) %>% 
   summarise(avgnRefHom=mean(nRefHom),avgnNonRefHom=mean(nNonRefHom),avgnHets=mean(nHets)) %>% 

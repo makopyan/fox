@@ -1,6 +1,13 @@
 input
 ================
 
+-   [Samples](#samples)
+-   [Genic Regions](#genic-regions)
+-   [Compute Summary Statistics](#compute-summary-statistics)
+-   [Nucleotide diversity](#nucleotide-diversity)
+-   [Heterozygosity](#heterozygosity)
+-   [Segregating sites](#segregating-sites)
+
 ### Samples
 
 focus on mainland foxes from Sacks only (remove one bad sample) *n=41
