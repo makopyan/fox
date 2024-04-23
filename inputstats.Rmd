@@ -32,24 +32,46 @@ pop <- read_tsv("inputstats_files/mainland_WGSmetadata.txt") %>%
                                     TRUE ~ "east (14)")) %>% 
   mutate(depth=case_when(`Depth(x)`>18 ~ 8,
                          TRUE ~ 4)) %>% 
-  filter(Dataset=="Sacks")
+  filter(Dataset=="Sacks") %>% mutate(State=factor(State, levels = c("CA","NV","NM","TX","OK","AR","MO","MS","TN","AL","KY","SC"))) 
 
 
 ggplot() +
-  geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
-               fill = "gray90", color="gray40", linewidth=0.3) + 
-  geom_point(data = pop, aes(x=long, y = lat, fill = `Samples (n=41)`),shape = 21, size=2) +
+  geom_polygon(data = usa, aes(x=long, y = lat, group=group), 
+               fill = "white", color="gray70", linewidth=0.3) + 
+  geom_point(data = subset(pop,Deme=="pure"), aes(x=long, y = lat), size=1) +
   coord_fixed(xlim = c(-123, -75),  ylim = c(26, 41.8)) +
-  scale_fill_manual(values = c("dodgerblue2", "goldenrod", "red2"))+
+  #scale_fill_manual(values = c("dodgerblue2", "goldenrod", "red2"))+ 
+  scale_x_reverse()+
   xlab("") + ylab("") +
   theme(panel.grid.minor=element_blank(),
         panel.grid.major = element_blank(),
-        legend.position = "top",
-        legend.title = element_text(size=9),
+        legend.position = "none",
         panel.background=element_rect(color="white",fill="white",linewidth = 0.5),
-        axis.line=element_line(color="black"),
+        axis.line=element_line(color="black",size=0.2),
         axis.text=element_text(color="black"),
-        axis.ticks=element_line(color="black")) 
+        axis.ticks=element_line(color="black",size=0.2)) 
+
+ggsave("~/Downloads/grayfox_map_ew.png", width=7, height = 3, units="in")
+
+
+ggplot() +
+  geom_polygon(data = usa, aes(x=long, y = lat, group=group), 
+               fill = "white", color="gray70", linewidth=0.3) + 
+  geom_point(data = pop, aes(x=long, y = lat, color = State), size=1) +
+  coord_fixed(xlim = c(-123, -75),  ylim = c(26, 41.8)) +
+  #scale_fill_manual(values = c("dodgerblue2", "goldenrod", "red2"))+ 
+  scale_color_manual(values=c("#F01FFF","#8B1FFF","#261FFF","#1F7CFF","#1FE1FF","#1FFFB8","#1FFF53","#4FFF1F","#B4FF1F","#FFE51F","#FF801F","#FF1F1F"))+ 
+  scale_x_reverse()+
+  xlab("") + ylab("") +
+  theme(panel.grid.minor=element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "none",
+        panel.background=element_rect(color="white",fill="white",linewidth = 0.5),
+        axis.line=element_line(color="black",size=0.2),
+        axis.text=element_text(color="black"),
+        axis.ticks=element_line(color="black",size=0.2)) 
+
+ggsave("~/Downloads/grayfox_map.png", width=7, height = 3, units="in")
 
 
 pop  %>% filter(Deme=="pure") %>%  group_by(`Samples (n=41)`, Sex) %>% count()

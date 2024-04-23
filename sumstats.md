@@ -16,13 +16,12 @@ Filtered 2024
 > highly divergent grey fox lineages? Molecular Ecology, 32, 5323–5337.
 > <https://doi.org/10.1111/mec.17105>
 
-Identified significantly **lower overall heterozygosity** in the
-**eastern (6.0×10<sup>−4</sup>)** relative to the **western
-(9.8×10<sup>−4</sup>)** population (p«.001) and observed a decrease in
-heterozygosity along a northwest gradient in the eastern lineage:
+Identified significantly **lower overall heterozygosity** in the **east
+(6.0×10<sup>−4</sup>)** relative to the **west (9.8×10<sup>−4</sup>)**
+(p«.001) and observed a decrease in heterozygosity along a northwest
+gradient in the eastern lineage:
 
-![Spatial patterns of
-heterozygosity](https://onlinelibrary.wiley.com/cms/asset/95887713-c8e0-4754-a42f-c3f0aeedb70a/mec17105-fig-0006-m.jpg)
+<img src="sumstats_files/mec17105-fig-0006-m.jpg" alt="Spatial patterns of heterozygosity" width="600"/>
 
 ## Reanalysis
 
@@ -227,6 +226,9 @@ vcftools --gzvcf west6.vcf.gz --counts --exclude-bed gfgenes1kb.bed
 ```
 
 </details>
+
+<br>
+
 <details>
 <summary>
 Show code for CanFam3.1
@@ -264,6 +266,9 @@ vcftools --gzvcf cfwest6.vcf.gz --counts --exclude-bed cfgenes1kb.bed --out cfwe
 ```
 
 </details>
+
+<br>
+
 <table>
 <thead>
 <tr>
@@ -430,3 +435,83 @@ Total
             </tr>
             </tbody>
             </table>
+
+<br>
+
+> For genome comparisons, pi calculated in 10kb windows
+
+#### Mapped to Gray Fox Genome
+
+Average nucleotide diversity **1.8x higher in the east** (n=6) compared
+to the west (n=6) when mapped to **grayfox genome**
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+pop
+</th>
+<th style="text-align:left;">
+avgpi
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+east
+</td>
+<td style="text-align:left;">
+1.04e-04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+west
+</td>
+<td style="text-align:left;">
+5.78e-05
+</td>
+</tr>
+</tbody>
+</table>
+
+![](sumstats_files/figure-gfm/pi-1.png)<!-- -->
+
+#### Mapped to Canfam3.1
+
+Average nucleotide diversity **2.3x higher in the west** (n=6) compared
+to the east (n=6) when mapped to **canfam3.1**
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+pop
+</th>
+<th style="text-align:left;">
+avgpi
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+east
+</td>
+<td style="text-align:left;">
+6.41e-05
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+west
+</td>
+<td style="text-align:left;">
+1.45e-04
+</td>
+</tr>
+</tbody>
+</table>
+
+![](sumstats_files/figure-gfm/pi-cf-1.png)<!-- -->
