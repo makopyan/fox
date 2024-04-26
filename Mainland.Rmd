@@ -35,7 +35,7 @@ We analyzed n=26 samples (n=14 from East and n=12 from West)
 
 usa <- map_data("state")
 
-pop <- read_tsv("mainland/mainland_WGSmetadata.txt") %>% 
+pop <- read_tsv("Mainland_files/input/mainland_WGSmetadata.txt") %>% 
   dplyr::rename("long"=Lon,"lat"=Lat) %>% 
   filter(Dataset=="Sacks") %>% 
   filter(Deme=="pure") %>% 
@@ -64,7 +64,6 @@ ggplot() +
   guides(colour = "none",
          fill = guide_legend(nrow = 1))
 
-ggsave("mainland/samples.png", width=6.5, height = 2.5, units="in")
 
 ```
 
@@ -75,7 +74,7 @@ Eastern samples outlined in red were dropped (sequencing depth <4.5x) for analys
 
 >Armstrong et al. (2024). Chromosome-level assembly of the gray fox (Urocyon cinereoargenteus) confirms the basal loss of PRDM9 in Canidae, G3 Genes|Genomes|Genetics, 14:4jkae034, https://doi.org/10.1093/g3journal/jkae034
 
-<img src="mainland/canid_synteny.png" width="400"/>
+<img src="Mainland_files/input/canid_synteny.png" width="400"/>
 
 ## Demographies
 
@@ -83,23 +82,23 @@ SMC++ Output
 
 ```{r Demography, echo=FALSE, fig.height=4, message=FALSE, warning=FALSE}
 #Grayfox West
-gfplotwest <- read_csv("mainland/gf_west_plot.csv")
+gfplotwest <- read_csv("Mainland_files/input/gf_west_plot.csv")
 #Grayfox East
-gfploteast <- read_csv("mainland/gf_east_plot.csv")
+gfploteast <- read_csv("Mainland_files/input/gf_east_plot.csv")
 #Combine Grayfox
 gfplot<- bind_rows(gfplotwest,gfploteast)
 
 #Canfam4 West
-cf4plotwest <- read_csv("mainland/cf4_west_plot.csv")
+cf4plotwest <- read_csv("Mainland_files/input/cf4_west_plot.csv")
 #Canfam4 East
-cf4ploteast <- read_csv("mainland/cf4_east_plot.csv")
+cf4ploteast <- read_csv("Mainland_files/input/cf4_east_plot.csv")
 #Combine Canfam4
 cf4plot<- bind_rows(cf4plotwest,cf4ploteast) 
 
 #Canfam3 West
-cf3plotwest <- read_csv("mainland/cf3_west_plot.csv")
+cf3plotwest <- read_csv("Mainland_files/input/cf3_west_plot.csv")
 #Canfam3 East
-cf3ploteast <- read_csv("mainland/cf3_east_plot.csv")
+cf3ploteast <- read_csv("Mainland_files/input/cf3_east_plot.csv")
 #Combine Canfam3
 cf3plot<- bind_rows(cf3plotwest,cf3ploteast)
 
@@ -160,7 +159,7 @@ syn_avg <- data.frame(
 
 kable(syn_avg,digits = 12 )
 
-synteny<-read_tsv("mainland/syn_chrom_mean.txt")
+synteny<-read_tsv("Mainland_files/input/syn_chrom_mean.txt")
 
 ggplot(synteny,aes(x=mean.gf, y=mean.cf3,color = pop)) +
   geom_point() + 

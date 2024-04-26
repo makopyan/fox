@@ -9,6 +9,13 @@ Mainland ABC
 -   [Neutral Genome](#neutral-genome)
     -   [Genic Regions](#genic-regions)
 -   [Summary Statistics](#summary-statistics)
+    -   [Site frequency spectra](#site-frequency-spectra)
+    -   [Nucelotide diversity (pi)](#nucelotide-diversity-pi)
+-   [East Results](#east-results)
+    -   [Posterior distributions](#posterior-distributions)
+    -   [Bin correlations](#bin-correlations)
+    -   [Bin distributions](#bin-distributions)
+    -   [Top bins](#top-bins)
 
 ## Samples
 
@@ -204,7 +211,7 @@ Ne
 
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 
-end
+start
 
 </div>
 
@@ -213,7 +220,7 @@ end
 
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 
-start
+end
 
 </div>
 
@@ -231,7 +238,7 @@ Ne
 
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 
-end
+start
 
 </div>
 
@@ -240,7 +247,7 @@ end
 
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 
-start
+end
 
 </div>
 
@@ -250,102 +257,102 @@ start
 <tbody>
 <tr>
 <td style="text-align:right;">
-77000
+77,292
 </td>
 <td style="text-align:right;">
-965000
+107,731
 </td>
 <td style="text-align:right;">
-108000
+965,385
 </td>
 <td style="text-align:right;">
-70000
+69,659
 </td>
 <td style="text-align:right;">
-968000
+224,931
 </td>
 <td style="text-align:right;">
-225000
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-32000
-</td>
-<td style="text-align:right;">
-90000
-</td>
-<td style="text-align:right;">
-62000
-</td>
-<td style="text-align:right;">
-50000
-</td>
-<td style="text-align:right;">
-187000
-</td>
-<td style="text-align:right;">
-156000
+968,043
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-27000
+32,078
 </td>
 <td style="text-align:right;">
-52000
+62,266
 </td>
 <td style="text-align:right;">
-25000
+89,738
 </td>
 <td style="text-align:right;">
-72000
+50,221
 </td>
 <td style="text-align:right;">
-130000
+156,166
 </td>
 <td style="text-align:right;">
-90000
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-25000
-</td>
-<td style="text-align:right;">
-21000
-</td>
-<td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-80000
-</td>
-<td style="text-align:right;">
-75000
-</td>
-<td style="text-align:right;">
-25000
+187,421
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-56000
+27,164
 </td>
 <td style="text-align:right;">
-2000
+24,970
 </td>
 <td style="text-align:right;">
-1000
+51,866
 </td>
 <td style="text-align:right;">
-84000
+72,414
 </td>
 <td style="text-align:right;">
-21000
+90,343
 </td>
 <td style="text-align:right;">
-1000
+130,124
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24,815
+</td>
+<td style="text-align:right;">
+2,321
+</td>
+<td style="text-align:right;">
+20,800
+</td>
+<td style="text-align:right;">
+79,518
+</td>
+<td style="text-align:right;">
+25,193
+</td>
+<td style="text-align:right;">
+75,277
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+56,412
+</td>
+<td style="text-align:right;">
+1,117
+</td>
+<td style="text-align:right;">
+1,933
+</td>
+<td style="text-align:right;">
+83,582
+</td>
+<td style="text-align:right;">
+1,133
+</td>
+<td style="text-align:right;">
+20,991
 </td>
 </tr>
 </tbody>
@@ -428,36 +435,36 @@ Max
 <tbody>
 <tr>
 <td style="text-align:left;">
-NeCurr
+NeThree
 </td>
 <td style="text-align:right;">
-40000
+60,000
 </td>
 <td style="text-align:right;">
-70000
+90,000
 </td>
 <td style="text-align:right;">
-55000
+55,000
 </td>
 <td style="text-align:right;">
-100000
+85,000
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-NeThree
+TimeTwo
 </td>
 <td style="text-align:right;">
-60000
+75,000
 </td>
 <td style="text-align:right;">
-90000
+125,000
 </td>
 <td style="text-align:right;">
-55000
+170,000
 </td>
 <td style="text-align:right;">
-85000
+240,000
 </td>
 </tr>
 <tr>
@@ -465,16 +472,16 @@ NeThree
 NeTwo
 </td>
 <td style="text-align:right;">
-10000
+10,000
 </td>
 <td style="text-align:right;">
-50000
+50,000
 </td>
 <td style="text-align:right;">
-35000
+35,000
 </td>
 <td style="text-align:right;">
-65000
+65,000
 </td>
 </tr>
 <tr>
@@ -485,30 +492,30 @@ TimeOne
 1
 </td>
 <td style="text-align:right;">
-7500
+7,500
 </td>
 <td style="text-align:right;">
-115000
+115,000
 </td>
 <td style="text-align:right;">
-170000
+170,000
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-TimeTwo
+NeCurr
 </td>
 <td style="text-align:right;">
-75000
+40,000
 </td>
 <td style="text-align:right;">
-125000
+70,000
 </td>
 <td style="text-align:right;">
-170000
+55,000
 </td>
 <td style="text-align:right;">
-240000
+100,000
 </td>
 </tr>
 </tbody>
@@ -551,9 +558,7 @@ Show code
 
 galba <- fread("~/Downloads/galba.gtf.gz")
 
-
-
-chroms <- read_tsv("inputstats_files/grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
+chroms <- read_tsv("ABC_files/grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
   separate(scaf, remove=F, c(NA,NA,NA,NA,NA,"length"))
 
 gfgenes <- galba %>% left_join(chroms,by=c("V1"="scaf"))
@@ -567,20 +572,20 @@ mybeds <- mybednew %>%  mutate(g = str_remove_all(g, "\"")) %>% separate(g, sep=
 mb <- mybeds %>% group_by(gid) %>% filter(len==max(len)) %>% drop_na(chrom) %>% ungroup()
 
 
-mb1kb %>% write_tsv("sumstats_files/gfgenes_2024_1kb.bed", col_names = F)
+mb1kb %>% write_tsv("ABC_files/gfgenes_2024_1kb.bed", col_names = F)
 
 ## take the intersect to get neutral regions
 
 
-neutral <- read_tsv("sumstats_files/neutral.bed", col_names = c("chrom","start","end")) %>% mutate(size=end-start) 
+neutral <- read_tsv("ABC_files/neutral.bed", col_names = c("chrom","start","end")) %>% mutate(size=end-start) 
 
-neutral %>% filter(size>1000)  %>% dplyr::select(chrom,start,end) %>%  write_tsv("sumstats_files/neutral_regions_gt1kb.bed", col_names = F)
+neutral %>% filter(size>1000)  %>% dplyr::select(chrom,start,end) %>%  write_tsv("ABC_files/neutral_regions_gt1kb.bed", col_names = F)
 
 neutralsmall <- neutral %>% filter(size<1000) %>% dplyr::select(chrom,start,end)
 
 mbgt1kb <- bind_rows(mb1kb,neutralsmall) %>% arrange(chrom,start)
 
-mbgt1kb %>% write_tsv("sumstats_files/gfgenes_2024_1kb_gt1kb.bed", col_names = F)
+mbgt1kb %>% write_tsv("ABC_files/gfgenes_2024_1kb_gt1kb.bed", col_names = F)
 ```
 
 </details>
@@ -593,43 +598,35 @@ Do for empirical subset of samples (n=6) per pop
 
 ![](ABC_files/figure-gfm/empBin-1.png)<!-- -->
 
-#### Generate site frequency spectra for east and west populations
+### Site frequency spectra
 
 <details>
 <summary>
-Show code for getting allele counts
+Get allele counts
 </summary>
 
 <br>
 
 ``` bash
 ##Filter for six empirical samples per pop
-
 bcftools view -Oz -S west6.txt /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.drop295.ACgr59_DPgr205lt500.vcf.gz > west6.vcf.gz
-
 bcftools view -Oz -S east6.txt /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.drop295.ACgr59_DPgr205lt500.vcf.gz > east6.vcf.gz
 
 bcftools index -t west6.vcf.gz
-
 bcftools index -t east6.vcf.gz
 
 ##Filter for SNPs among sample set
 bcftools view --min-ac=1 --max-ac 11 west6.vcf.gz | bcftools view -i 'F_MISSING<0.1' -Oz -o snpwest6.vcf.gz
-
 bcftools index -t snpwest6.vcf.gz
 
 bcftools view --min-ac=1 --max-ac 11 east6.vcf.gz | bcftools view -i 'F_MISSING<0.1' -Oz -o snpeast6.vcf.gz
-
 bcftools index -t snpeast6.vcf.gz
-
 
 ##Get allele counts
 vcftools --gzvcf snpeast6.vcf.gz --counts --out eastcount_neutral --exclude-bed gfgenes_2024_1kb_gt1kb.bed >& eastcount_neutral.log
-
 vcftools --gzvcf snpwest6.vcf.gz --counts --out westcount_neutral --exclude-bed gfgenes_2024_1kb_gt1kb.bed >& westcount_neutral.log
 
 sed -e 's/:/\t/g'  eastcount_neutral.frq.count > east_neutral.count
-
 sed -e 's/:/\t/g'  westcount_neutral.frq.count > west_neutral.count
 ```
 
@@ -637,11 +634,9 @@ sed -e 's/:/\t/g'  westcount_neutral.frq.count > west_neutral.count
 
 <br>
 
-#### Bin allele counts to get site frequency spectrum
-
 <details>
 <summary>
-Show code for binning allele counts
+Bin allele counts
 </summary>
 
 <br>
@@ -676,11 +671,11 @@ write_tsv(statsbin,"/scratch1/marjanak/mainland_2024/gf_correct/emp_bin_summary.
 
 <br>
 
-#### Calculate per-site nucleotide diversity (pi) in east and west using gVCFs
+### Nucelotide diversity (pi)
 
 <details>
 <summary>
-Show code for per chrom job array
+Calculate per-site nucleotide diversity
 </summary>
 
 <br>
@@ -710,11 +705,9 @@ sleep 60
 
 <br>
 
-#### Calculate nucleotide diversity in neutral regions
-
 <details>
 <summary>
-Show code for getting nucelotide diversity
+Calculate average per neutral region
 </summary>
 
 <br>
@@ -729,7 +722,6 @@ awk '$3 != 0' east_sites.pi > allChroms.sites.pi
 #Convert to bed format
 awk 'OFS="\t"{print $1, $2-1, $2, $3}' allChroms.sites.pi > allChroms.sites.bed
 
-
 #Intersect per site pi and neutral region bed files to calculate avg pi per region 
 bedtools intersect -a neutral_regions_gt1kb.bed -b allChroms.sites.bed -wa -wb > intersected_sites.bed
 ```
@@ -738,11 +730,9 @@ bedtools intersect -a neutral_regions_gt1kb.bed -b allChroms.sites.bed -wa -wb >
 
 <br>
 
-#### Bin Nucelotide Diversity
-
 <details>
 <summary>
-Show code for binning nucleotide diversity
+Bin nucleotide diversity
 </summary>
 
 <br>
@@ -790,3 +780,33 @@ pibin <- bind_rows("east"=cte, "west"=ctw, .id="pop") %>% mutate(bin=as.integer(
 </details>
 
 <br>
+
+## East Results
+
+### Posterior distributions
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+<img src="ABC_files/posterior.png" width="700"/>
+
+### Bin correlations
+
+Correlaton between SFS (x-axis) pi (y-axis) bins (facets)
+
+Gray (all sims), Blue (top 100 sims), Red (empirical)
+
+<img src="ABC_files/bin_corr.png" width="700"/>
+
+### Bin distributions
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+<img src="ABC_files/sfs_bins.png" width="700"/>
+
+<img src="ABC_files/pi_bins.png" width="700"/>
+
+### Top bins
+
+<img src="ABC_files/topfs.png" width="800"/>
+
+<img src="ABC_files/toppi.png" width="800"/>

@@ -33,7 +33,7 @@ spectra)
 > Canidae, G3 Genes\|Genomes\|Genetics, 14:4jkae034,
 > <https://doi.org/10.1093/g3journal/jkae034>
 
-<img src="mainland/canid_synteny.png" width="400"/>
+<img src="Mainland_files/input/canid_synteny.png" width="400"/>
 
 ## Demographies
 

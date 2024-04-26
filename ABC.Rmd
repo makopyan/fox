@@ -33,7 +33,7 @@ east6dem <- c("SRR24465268","SRR24465309","SRR24465270","SRR24465308","SRR244652
 west6dem <- c("SRR24465287","SRR24465284","SRR24465283","SRR24465290","SRR24465289","SRR24465291")
 
 
-pop <- read_tsv("inputstats_files/mainland_WGSmetadata.txt") %>% 
+pop <- read_tsv("Mainland_files/input/mainland_WGSmetadata.txt") %>% 
   dplyr::rename("long"=Lon,"lat"=Lat) %>% 
   filter(Dataset=="Sacks") %>% 
   filter(`Depth(x)`>4.5) %>% 
@@ -99,32 +99,25 @@ ggplot()+
         legend.position = c(0.9,0.2)) +
   scale_color_manual(values = c("goldenrod2","aquamarine3")) 
 
-
 eastroundpb <- pb %>% filter(pop=="east") %>% 
   dplyr::group_by(y) %>% 
   dplyr::rename("Ne"="y") %>% 
-  dplyr::summarise(time_end=max(x),time_st=min(x)) %>%  
-  arrange(desc(time_st)) %>%
-  mutate(Ne=plyr::round_any(Ne,1000), 
-         time_st=plyr::round_any(time_st,1000), 
-         time_end=plyr::round_any(time_end,1000))
-
+  dplyr::summarise(time_st=as.integer(min(x)),time_end=as.integer(max(x))) %>% 
+  mutate(Ne=as.integer(Ne)) %>% 
+  arrange(desc(time_st)) 
 
 westroundpb <- pb %>% filter(pop=="west") %>% 
   dplyr::group_by(y) %>% 
   dplyr::rename("Ne"="y") %>% 
-  dplyr::summarise(time_end=max(x),time_st=min(x)) %>%  
-  arrange(desc(time_st)) %>%
-  mutate(Ne=plyr::round_any(Ne,1000), 
-         time_st=plyr::round_any(time_st,1000), 
-         time_end=plyr::round_any(time_end,1000))
+  dplyr::summarise(time_st=as.integer(min(x)),time_end=as.integer(max(x))) %>% 
+  mutate(Ne=as.integer(Ne)) %>% 
+  arrange(desc(time_st)) 
 
 roundpb <- cbind(eastroundpb,westroundpb) %>% unname()
 
-
-kable(roundpb, "html", escape = FALSE) %>% 
+kable(roundpb, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>% 
   kable_styling(full_width = F) %>%
-  add_header_above(c("Ne" = 1, "end" = 1,"start" = 1,"Ne" = 1, "end" = 1,"start" = 1)) %>% 
+  add_header_above(c("Ne" = 1, "start" = 1,"end" = 1,"Ne" = 1, "start" = 1,"end" = 1)) %>% 
   add_header_above(c("East" = 3, "West" = 3))
 ```
 
@@ -135,7 +128,15 @@ kable(roundpb, "html", escape = FALSE) %>%
 priors <- read_tsv("ABC_files/priors_t16.txt") 
 
 
-kable(priors, "html", escape = FALSE,col.names = NULL) %>% 
+priors$variable <- factor(priors$variable , levels = c("NeThree","TimeTwo","NeTwo","TimeOne","NeCurr"))
+
+priors <- priors[order(priors$variable), ]
+
+
+
+
+
+kable(priors, "html", escape = FALSE,col.names = NULL,format.args = list(big.mark = ",") ) %>% 
   kable_styling(full_width = F) %>%
   add_header_above(c("Variable" = 1, "Min" = 1,"Max" = 1,"Min" = 1,"Max" = 1)) %>%
   add_header_above(c(" "=1, "East" = 2, "West" = 2))
@@ -176,9 +177,7 @@ create bed file of genes ±1kb from annotation
 
 galba <- fread("~/Downloads/galba.gtf.gz")
 
-
-
-chroms <- read_tsv("inputstats_files/grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
+chroms <- read_tsv("ABC_files/grayfox_renameChroms_number.txt", col_names = c("scaf","chrom")) %>% 
   separate(scaf, remove=F, c(NA,NA,NA,NA,NA,"length"))
 
 gfgenes <- galba %>% left_join(chroms,by=c("V1"="scaf"))
@@ -192,20 +191,20 @@ mybeds <- mybednew %>%  mutate(g = str_remove_all(g, "\"")) %>% separate(g, sep=
 mb <- mybeds %>% group_by(gid) %>% filter(len==max(len)) %>% drop_na(chrom) %>% ungroup()
 
 
-mb1kb %>% write_tsv("sumstats_files/gfgenes_2024_1kb.bed", col_names = F)
+mb1kb %>% write_tsv("ABC_files/gfgenes_2024_1kb.bed", col_names = F)
 
 ## take the intersect to get neutral regions
 
 
-neutral <- read_tsv("sumstats_files/neutral.bed", col_names = c("chrom","start","end")) %>% mutate(size=end-start) 
+neutral <- read_tsv("ABC_files/neutral.bed", col_names = c("chrom","start","end")) %>% mutate(size=end-start) 
 
-neutral %>% filter(size>1000)  %>% dplyr::select(chrom,start,end) %>%  write_tsv("sumstats_files/neutral_regions_gt1kb.bed", col_names = F)
+neutral %>% filter(size>1000)  %>% dplyr::select(chrom,start,end) %>%  write_tsv("ABC_files/neutral_regions_gt1kb.bed", col_names = F)
 
 neutralsmall <- neutral %>% filter(size<1000) %>% dplyr::select(chrom,start,end)
 
 mbgt1kb <- bind_rows(mb1kb,neutralsmall) %>% arrange(chrom,start)
 
-mbgt1kb %>% write_tsv("sumstats_files/gfgenes_2024_1kb_gt1kb.bed", col_names = F)
+mbgt1kb %>% write_tsv("ABC_files/gfgenes_2024_1kb_gt1kb.bed", col_names = F)
 
 ```
 
@@ -248,7 +247,7 @@ ggplot(neutral_tab)+
 
 Do for empirical subset of samples (n=6) per pop
 
-```{r empBin, echo=FALSE, fig.height=4, fig.width=5, message=FALSE, warning=FALSE}
+```{r empBin, echo=FALSE, fig.height=5.5, fig.width=7, message=FALSE, warning=FALSE}
 
 empbin<-fread("ABC_files/emp_bin_summary.txt")
 
@@ -273,64 +272,43 @@ ggplot(empbin)+
 ```
 
 
+### Site frequency spectra  
 
-
-#### Generate site frequency spectra for east and west populations
 
 <details>
-<summary>Show code for getting allele counts</summary>
+<summary>Get allele counts</summary>
 <br>
-
-
 ```{bash alleles, eval=F}
 
 ##Filter for six empirical samples per pop
-
 bcftools view -Oz -S west6.txt /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.drop295.ACgr59_DPgr205lt500.vcf.gz > west6.vcf.gz
-
 bcftools view -Oz -S east6.txt /project/jazlynmo_738/DataRepository/Canids/Variants/GrayFox/Mainland/grayfox_filtered.renameChroms.Mainland.drop295.ACgr59_DPgr205lt500.vcf.gz > east6.vcf.gz
 
 bcftools index -t west6.vcf.gz
-
 bcftools index -t east6.vcf.gz
 
 ##Filter for SNPs among sample set
 bcftools view --min-ac=1 --max-ac 11 west6.vcf.gz | bcftools view -i 'F_MISSING<0.1' -Oz -o snpwest6.vcf.gz
-
 bcftools index -t snpwest6.vcf.gz
 
 bcftools view --min-ac=1 --max-ac 11 east6.vcf.gz | bcftools view -i 'F_MISSING<0.1' -Oz -o snpeast6.vcf.gz
-
 bcftools index -t snpeast6.vcf.gz
-
 
 ##Get allele counts
 vcftools --gzvcf snpeast6.vcf.gz --counts --out eastcount_neutral --exclude-bed gfgenes_2024_1kb_gt1kb.bed >& eastcount_neutral.log
-
 vcftools --gzvcf snpwest6.vcf.gz --counts --out westcount_neutral --exclude-bed gfgenes_2024_1kb_gt1kb.bed >& westcount_neutral.log
 
 sed -e 's/:/\t/g'  eastcount_neutral.frq.count > east_neutral.count
-
 sed -e 's/:/\t/g'  westcount_neutral.frq.count > west_neutral.count
 
-
-
-
 ```
-
 </details>
-
 <br>
 
-
-
-#### Bin allele counts to get site frequency spectrum
 
 <details>
-<summary>Show code for binning allele counts</summary>
+<summary>Bin allele counts</summary>
 <br>
-
-
 ```{r binAlleles, eval=F}
 
 eastcount <- fread("/scratch1/marjanak/mainland_2024/gf_correct/east_neutral.count",col.names = c("CHROM","POS","N_ALLELES","N_CHR","allele1","count1","allele2","count2"))
@@ -357,20 +335,14 @@ statsbin <- bind_rows("pi"=pibin,"sfs"=snpbin,.id="stat")
 
 write_tsv(statsbin,"/scratch1/marjanak/mainland_2024/gf_correct/emp_bin_summary.txt")
 
-
 ```
-
 </details>
-
 <br>
 
-
-
-#### Calculate per-site nucleotide diversity (pi) in east and west using gVCFs 
-
+### Nucelotide diversity (pi)  
 
 <details>
-<summary>Show code for per chrom job array</summary>
+<summary>Calculate per-site nucleotide diversity</summary>
 <br>
 
 ```{bash sitePi, eval=F}
@@ -393,15 +365,11 @@ vcftools --gzvcf /project/jazlynmo_738/DataRepository/Canids/Invariant/GrayFox/M
 
 sleep 60
 ```
-
 </details>
-
 <br>
 
-#### Calculate nucleotide diversity in neutral regions
-
 <details>
-<summary>Show code for getting nucelotide diversity</summary>
+<summary>Calculate average per neutral region</summary>
 <br>
 ```{bash sumPi, eval=F}
 
@@ -414,22 +382,15 @@ awk '$3 != 0' east_sites.pi > allChroms.sites.pi
 #Convert to bed format
 awk 'OFS="\t"{print $1, $2-1, $2, $3}' allChroms.sites.pi > allChroms.sites.bed
 
-
 #Intersect per site pi and neutral region bed files to calculate avg pi per region 
 bedtools intersect -a neutral_regions_gt1kb.bed -b allChroms.sites.bed -wa -wb > intersected_sites.bed
 ```
 </details>
-
 <br>
 
 
-
-
-#### Bin Nucelotide Diversity
-
-
 <details>
-<summary>Show code for binning nucleotide diversity</summary>
+<summary>Bin nucleotide diversity</summary>
 <br>
 ```{r pibin, eval=F}
 
@@ -472,7 +433,47 @@ ctw <- countwest %>% group_by(cutsize) %>% summarise(regs=n())
 pibin <- bind_rows("east"=cte, "west"=ctw, .id="pop") %>% mutate(bin=as.integer(bin))
 
 ```
-
 </details>
-
 <br>
+
+
+## East Results  
+
+
+### Posterior distributions  
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+<img src="ABC_files/posterior.png" width="700"/>
+
+
+### Bin correlations  
+
+Correlaton between SFS  (x-axis) pi (y-axis) bins (facets)
+
+Gray (all sims), Blue (top 100 sims), Red (empirical) 
+
+<img src="ABC_files/bin_corr.png" width="700"/>
+
+
+### Bin distributions  
+
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+
+<img src="ABC_files/sfs_bins.png" width="700"/>
+
+
+<img src="ABC_files/pi_bins.png" width="700"/>
+
+
+
+### Top bins  
+
+<img src="ABC_files/topfs.png" width="800"/>
+
+
+<img src="ABC_files/toppi.png" width="800"/>
+
+
