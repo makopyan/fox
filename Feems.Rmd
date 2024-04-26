@@ -1,0 +1,64 @@
+---
+title: "Feems"
+output: 
+  github_document:
+    toc: true
+always_allow_html: true
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(sf)
+```
+
+
+## Outer boundary polygon  
+
+Outer boundary (green)  
+Species range (blue)   
+Sampling localities (black)  
+```{r Boundary, echo=FALSE, fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
+
+# Load the shapefiles
+
+world <- st_read("ABC_files/World_Continents/World_Continents.shp",quiet = TRUE)
+
+species_range <- st_read("ABC_files/iucn_habitat_grayfox/data_0.shp",quiet = TRUE)
+
+samples <- read_tsv("Mainland_files/input/mainland_WGSmetadata.txt") %>% 
+  dplyr::rename("long"=Lon,"lat"=Lat) %>% 
+  filter(Dataset=="Sacks")
+
+data_points <- samples %>% select(long,lat)
+
+data_points_sf <- st_as_sf(data_points, coords = c("long", "lat"), crs = 4326)
+
+# Approximate buffer in degrees (very rough approximation)
+buffer_degree <- st_buffer(data_points_sf, dist = (100 / 111) + 1)
+
+# Create convex hull around the combined buffer zones
+combined_buffer <- st_union(buffer_degree)
+convex_hull <- st_convex_hull(combined_buffer)
+
+# Intersect convex hull with the species range, ensuring species_range is also in CRS 4326
+
+species_range <- st_transform(species_range, crs = 4326)
+convex_hull_within_range <- st_intersection(convex_hull, species_range)
+
+ggplot() + 
+  geom_sf(data = world, color = NA, fill = "burlywood3") + 
+  geom_sf(data = species_range, color = NA, fill = "royalblue") + 
+  geom_sf(data = convex_hull_within_range, color = NA, fill = "darkolivegreen1") +
+  geom_sf(data = data_points_sf, size = 0.8, shape = 20) +
+  coord_sf(xlim=c(-130,-62), ylim=c(2,51), expand = FALSE)+
+  theme_classic()+
+  theme(axis.text = element_text(color="black",size=9),
+        legend.title = element_blank(),
+        legend.position = "top",
+        axis.title = element_blank())+
+  scale_y_continuous(breaks=seq(0,50,10)) +
+  scale_x_continuous(breaks=seq(-125,-60,15))
+
+```
+
