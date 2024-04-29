@@ -444,7 +444,7 @@ pibin <- bind_rows("east"=cte, "west"=ctw, .id="pop") %>% mutate(bin=as.integer(
 
 All 100,000 Simulations (orange) and Top 100 (blue)
 
-<img src="ABC_files/posterior.png" width="700"/>
+<img src="ABC_files/east/posterior.png" width="700"/>
 
 
 ### Bin correlations  
@@ -453,7 +453,7 @@ Correlaton between SFS  (x-axis) pi (y-axis) bins (facets)
 
 Gray (all sims), Blue (top 100 sims), Red (empirical) 
 
-<img src="ABC_files/bin_corr.png" width="700"/>
+<img src="ABC_files/east/bin_corr.png" width="700"/>
 
 
 ### Bin distributions  
@@ -462,18 +462,62 @@ Gray (all sims), Blue (top 100 sims), Red (empirical)
 All 100,000 Simulations (orange) and Top 100 (blue)
 
 
-<img src="ABC_files/sfs_bins.png" width="700"/>
+<img src="ABC_files/east/sfs_bins.png" width="700"/>
 
 
-<img src="ABC_files/pi_bins.png" width="700"/>
+<img src="ABC_files/east/pi_bins.png" width="700"/>
 
 
 
 ### Top bins  
 
-<img src="ABC_files/topfs.png" width="800"/>
+<img src="ABC_files/east/topfs.png" width="800"/>
 
 
-<img src="ABC_files/toppi.png" width="800"/>
+<img src="ABC_files/east/toppi.png" width="800"/>
+
+
+
+
+## West Results  
+
+
+### Posterior distributions  
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+<img src="ABC_files/west/posterior.png" width="700"/>
+
+
+### Bin correlations  
+
+Correlaton between SFS  (x-axis) pi (y-axis) bins (facets)
+
+Gray (all sims), Blue (top 100 sims), Red (empirical) 
+
+<img src="ABC_files/west/bin_corr.png" width="700"/>
+
+
+### Bin distributions  
+
+
+All 100,000 Simulations (orange) and Top 100 (blue)
+
+
+<img src="ABC_files/west/sfs_bins.png" width="700"/>
+
+
+<img src="ABC_files/west/pi_bins.png" width="700"/>
+
+
+
+### Top bins  
+
+<img src="ABC_files/west/topfs.png" width="800"/>
+
+
+<img src="ABC_files/west/toppi.png" width="800"/>
+
+
 
 
