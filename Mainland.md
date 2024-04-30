@@ -40,19 +40,31 @@ spectra)
 SMC++ Output
 
 ![](Mainland_files/figure-gfm/Demography-1.png)<!-- -->
-<table class="kable_wrapper table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
+<table class="table" style="width: auto !important; float: left; margin-right: 10px;">
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Canfam4
+
+</div>
+
+</th>
+</tr>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
 East
-</caption>
-<tbody>
-<tr>
-<td>
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-genome
+
+</div>
+
 </th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -66,99 +78,98 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+7,300
 </td>
 <td style="text-align:right;">
-7000
+930,100
 </td>
 <td style="text-align:right;">
-930000
-</td>
-<td style="text-align:right;">
-12000
+12,300
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+4,000
 </td>
 <td style="text-align:right;">
-4000
+6,600
 </td>
 <td style="text-align:right;">
-7000
-</td>
-<td style="text-align:right;">
-1000
+800
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+2,700
 </td>
 <td style="text-align:right;">
-3000
+3,700
 </td>
 <td style="text-align:right;">
-4000
-</td>
-<td style="text-align:right;">
-2000
+2,200
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+1,800
 </td>
 <td style="text-align:right;">
-2000
+2,500
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-2000
+2,100
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+1,200
 </td>
 <td style="text-align:right;">
-1000
+1,700
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-3000
+3,200
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+1,000
 </td>
 <td style="text-align:right;">
-1000
+1,100
 </td>
 <td style="text-align:right;">
-1000
-</td>
-<td style="text-align:right;">
-8000
+7,700
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-<td>
-<table>
+<table class="table" style="width: auto !important; float: left; margin-right: 10px;">
 <thead>
 <tr>
-<th style="text-align:left;">
-genome
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Canfam3
+
+</div>
+
 </th>
+</tr>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+East
+
+</div>
+
+</th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -172,85 +183,87 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+6,300
 </td>
 <td style="text-align:right;">
-6000
+870,900
 </td>
 <td style="text-align:right;">
-871000
-</td>
-<td style="text-align:right;">
-11000
+10,500
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+3,300
 </td>
 <td style="text-align:right;">
-3000
+5,400
 </td>
 <td style="text-align:right;">
-5000
-</td>
-<td style="text-align:right;">
-1000
+700
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+2,100
 </td>
 <td style="text-align:right;">
-2000
+2,900
 </td>
 <td style="text-align:right;">
-3000
-</td>
-<td style="text-align:right;">
-2000
+2,300
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+1,500
 </td>
 <td style="text-align:right;">
-2000
+1,800
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-2000
+1,600
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+1,100
 </td>
 <td style="text-align:right;">
-1000
+1,300
 </td>
 <td style="text-align:right;">
-1000
-</td>
-<td style="text-align:right;">
-2000
+2,200
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-<td>
-<table>
+<table class="table" style="width: auto !important; ">
 <thead>
 <tr>
-<th style="text-align:left;">
-genome
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Grayfox
+
+</div>
+
 </th>
+</tr>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+East
+
+</div>
+
+</th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -264,94 +277,91 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+209,400
 </td>
 <td style="text-align:right;">
-209000
+957,200
 </td>
 <td style="text-align:right;">
-957000
-</td>
-<td style="text-align:right;">
-71000
+70,500
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+118,400
 </td>
 <td style="text-align:right;">
-118000
+173,200
 </td>
 <td style="text-align:right;">
-173000
-</td>
-<td style="text-align:right;">
-31000
+30,900
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+55,400
 </td>
 <td style="text-align:right;">
-55000
+97,900
 </td>
 <td style="text-align:right;">
-98000
-</td>
-<td style="text-align:right;">
-25000
+25,300
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+5,700
 </td>
 <td style="text-align:right;">
-6000
+45,800
 </td>
 <td style="text-align:right;">
-46000
-</td>
-<td style="text-align:right;">
-23000
+22,600
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+1,000
 </td>
 <td style="text-align:right;">
-1000
+4,700
 </td>
 <td style="text-align:right;">
-5000
-</td>
-<td style="text-align:right;">
-53000
+53,000
 </td>
 </tr>
 </tbody>
 </table>
-</td>
+
+<br>
+
+![](Mainland_files/figure-gfm/Demography2-1.png)<!-- -->
+<table class="table" style="width: auto !important; float: left; margin-right: 10px;">
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Canfam4
+
+</div>
+
+</th>
 </tr>
-</tbody>
-</table>
-<table class="kable_wrapper table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
 West
-</caption>
-<tbody>
-<tr>
-<td>
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-genome
+
+</div>
+
 </th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -365,127 +375,120 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+22,100
 </td>
 <td style="text-align:right;">
-22000
+975,100
 </td>
 <td style="text-align:right;">
-975000
-</td>
-<td style="text-align:right;">
-17000
+17,100
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+13,200
 </td>
 <td style="text-align:right;">
-13000
+20,300
 </td>
 <td style="text-align:right;">
-20000
-</td>
-<td style="text-align:right;">
-3000
+3,400
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+8,600
 </td>
 <td style="text-align:right;">
-9000
+12,100
 </td>
 <td style="text-align:right;">
-12000
-</td>
-<td style="text-align:right;">
-7000
+7,500
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+6,100
 </td>
 <td style="text-align:right;">
-6000
+7,900
 </td>
 <td style="text-align:right;">
-8000
-</td>
-<td style="text-align:right;">
-6000
+5,700
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+4,000
 </td>
 <td style="text-align:right;">
-4000
+5,600
 </td>
 <td style="text-align:right;">
-6000
-</td>
-<td style="text-align:right;">
-6000
+5,600
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+2,400
 </td>
 <td style="text-align:right;">
-2000
+3,600
 </td>
 <td style="text-align:right;">
-4000
-</td>
-<td style="text-align:right;">
-6000
+6,300
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+1,700
 </td>
 <td style="text-align:right;">
-2000
+2,200
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-7000
+7,000
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam4
+<td style="text-align:right;">
+1,100
 </td>
 <td style="text-align:right;">
-1000
+1,500
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-8000
+8,200
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-<td>
-<table>
+<table class="table" style="width: auto !important; float: left; margin-right: 10px;">
 <thead>
 <tr>
-<th style="text-align:left;">
-genome
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Canfam3
+
+</div>
+
 </th>
+</tr>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+West
+
+</div>
+
+</th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -499,127 +502,120 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+17,900
 </td>
 <td style="text-align:right;">
-18000
+939,800
 </td>
 <td style="text-align:right;">
-940000
-</td>
-<td style="text-align:right;">
-15000
+14,700
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+10,600
 </td>
 <td style="text-align:right;">
-11000
+16,400
 </td>
 <td style="text-align:right;">
-16000
-</td>
-<td style="text-align:right;">
-3000
+2,800
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+6,800
 </td>
 <td style="text-align:right;">
-7000
+9,700
 </td>
 <td style="text-align:right;">
-10000
-</td>
-<td style="text-align:right;">
-6000
+6,500
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+4,800
 </td>
 <td style="text-align:right;">
-5000
+6,200
 </td>
 <td style="text-align:right;">
-6000
-</td>
-<td style="text-align:right;">
-4000
+4,400
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+3,100
 </td>
 <td style="text-align:right;">
-3000
+4,400
 </td>
 <td style="text-align:right;">
-4000
-</td>
-<td style="text-align:right;">
-5000
+4,600
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+1,800
 </td>
 <td style="text-align:right;">
-2000
+2,800
 </td>
 <td style="text-align:right;">
-3000
-</td>
-<td style="text-align:right;">
-6000
+5,900
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+1,300
 </td>
 <td style="text-align:right;">
-1000
+1,700
 </td>
 <td style="text-align:right;">
-2000
-</td>
-<td style="text-align:right;">
-7000
+7,100
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Canfam3
+<td style="text-align:right;">
+1,100
 </td>
 <td style="text-align:right;">
-1000
+1,200
 </td>
 <td style="text-align:right;">
-1000
-</td>
-<td style="text-align:right;">
-9000
+9,400
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-<td>
-<table>
+<table class="table" style="width: auto !important; ">
 <thead>
 <tr>
-<th style="text-align:left;">
-genome
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+Grayfox
+
+</div>
+
 </th>
+</tr>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+
+West
+
+</div>
+
+</th>
+</tr>
+<tr>
 <th style="text-align:right;">
 start
 </th>
@@ -633,81 +629,64 @@ Ne
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+453,700
 </td>
 <td style="text-align:right;">
-454000
+967,400
 </td>
 <td style="text-align:right;">
-967000
-</td>
-<td style="text-align:right;">
-71000
+71,200
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+257,100
 </td>
 <td style="text-align:right;">
-257000
+375,400
 </td>
 <td style="text-align:right;">
-375000
-</td>
-<td style="text-align:right;">
-52000
+52,500
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+176,100
 </td>
 <td style="text-align:right;">
-176000
+212,800
 </td>
 <td style="text-align:right;">
-213000
-</td>
-<td style="text-align:right;">
-80000
+79,600
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+46,800
 </td>
 <td style="text-align:right;">
-47000
+145,700
 </td>
 <td style="text-align:right;">
-146000
-</td>
-<td style="text-align:right;">
-75000
+75,200
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Grayfox
+<td style="text-align:right;">
+1,100
 </td>
 <td style="text-align:right;">
-1000
+38,700
 </td>
 <td style="text-align:right;">
-39000
-</td>
-<td style="text-align:right;">
-84000
+84,000
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-</tbody>
-</table>
+
+<br> <br> <br> <br>
 
 ## Recombination rates
 

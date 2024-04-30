@@ -109,7 +109,7 @@ cfgf <- bind_rows("Grayfox"=gfplot, "Canfam3"=cf3plot, "Canfam4"=cf4plot, .id="g
   filter(x>1e3& x<1e6) %>% select(genome,pop,x,y)
 
 
-cx_breaks = c(0,10,100,1e3, 1e4, 1e5, 1e6)
+cx_breaks = c(0,10,100,1e3,1e4,1e5,1e6)
 cy_breaks = c(0,1e3,2e3,3e3,5e3,8e3,125e2,2e4,3e4,45e3,7e4,1e5,2e5,5e5)
 
 
@@ -122,8 +122,7 @@ ggplot()+
   theme_classic() +
   theme(axis.text=element_text(color="black", size=11),
         legend.position = "top",legend.title = element_blank()) +
-  scale_color_manual(values = c("goldenrod2","aquamarine3")) 
-
+  scale_color_manual(values = c("goldenrod2","aquamarine3"))
 
 
 pcfgf <- cfgf %>% 
@@ -131,21 +130,78 @@ pcfgf <- cfgf %>%
   group_by(genome,pop,Ne) %>% 
   summarise(end=max(x),start=min(x)) %>%  
   arrange(genome,pop,desc(start)) %>%
-  mutate(Ne=plyr::round_any(Ne,1000),start=plyr::round_any(start,1000),end=plyr::round_any(end,1000)) %>% ungroup()
+  mutate(Ne=plyr::round_any(Ne,100),start=plyr::round_any(start,100),end=plyr::round_any(end,100)) %>% ungroup()
 
 
-pcf4e <- pcfgf %>% filter(genome=="Canfam4" & pop=="East") %>% select(genome,start,end,Ne) 
-pcf3e <- pcfgf %>% filter(genome=="Canfam3" & pop=="East") %>% select(genome,start,end,Ne) 
-pgfe <- pcfgf %>% filter(genome=="Grayfox" & pop=="East") %>% select(genome,start,end,Ne) 
+pcf4e <- pcfgf %>% filter(genome=="Canfam4" & pop=="East") %>% select(start,end,Ne) 
+pcf3e <- pcfgf %>% filter(genome=="Canfam3" & pop=="East") %>% select(start,end,Ne) 
+pgfe <- pcfgf %>% filter(genome=="Grayfox" & pop=="East") %>% select(start,end,Ne)  
 
-pcf4w <- pcfgf %>% filter(genome=="Canfam4" & pop=="West") %>% select(genome,start,end,Ne) 
-pcf3w <- pcfgf %>% filter(genome=="Canfam3" & pop=="West") %>% select(genome,start,end,Ne) 
-pgfw <- pcfgf %>% filter(genome=="Grayfox" & pop=="West") %>% select(genome,start,end,Ne) 
+pcf4w <- pcfgf %>% filter(genome=="Canfam4" & pop=="West") %>% select(start,end,Ne) 
+pcf3w <- pcfgf %>% filter(genome=="Canfam3" & pop=="West") %>% select(start,end,Ne) 
+pgfw <- pcfgf %>% filter(genome=="Grayfox" & pop=="West") %>% select(start,end,Ne) 
 
+kable(pcf4e, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "float_left") %>% 
+  add_header_above(c("East" = 3))%>% 
+  add_header_above(c("Canfam4" = 3))
 
-kable(list(pcf4e,pcf3e,pgfe),caption="East") %>% kable_styling(full_width = F) 
-kable(list(pcf4w,pcf3w,pgfw),caption="West") %>% kable_styling(full_width = F)
+kable(pcf3e, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "float_left") %>% 
+  add_header_above(c("East" = 3))%>% 
+  add_header_above(c("Canfam3" = 3))
+
+kable(pgfe, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "left") %>% 
+  add_header_above(c("East" = 3))%>% 
+  add_header_above(c("Grayfox" = 3))
+
 ```
+
+<br>
+
+```{r Demography2, echo=FALSE, fig.height=8, message=FALSE, warning=FALSE}
+
+ggplot()+
+  geom_line(data=cfgf,aes(x=x,y=y,color=pop),linewidth=1) + 
+  scale_y_continuous(trans = "log",breaks=cy_breaks,labels = ~ format(.x, scientific = FALSE))+
+  scale_x_continuous(trans = "log",breaks=cx_breaks,labels = ~ format(.x, scientific = FALSE))+ 
+  labs(x ="Years", y = "Effective Population Size") +
+  theme_classic() +
+  theme(axis.text=element_text(color="black", size=11),
+        legend.position = "top",legend.title = element_blank()) +
+  scale_color_manual(values = c("goldenrod2","aquamarine3")) + 
+  facet_wrap(~genome,nrow=3,scales="free_y")
+
+
+   
+kable(pcf4w, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "float_left") %>% 
+  add_header_above(c("West" = 3))%>% 
+  add_header_above(c("Canfam4" = 3))
+
+kable(pcf3w, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "float_left") %>% 
+  add_header_above(c("West" = 3))%>% 
+  add_header_above(c("Canfam3" = 3))
+
+kable(pgfw, "html", escape = FALSE,format.args = list(big.mark = ",") ) %>%
+  kable_styling(full_width = FALSE, position = "left") %>% 
+  add_header_above(c("West" = 3)) %>% 
+  add_header_above(c("Grayfox" = 3))
+
+
+
+
+#kable(list(pcf4e,pcf3e,pgfe),caption="East") %>% kable_styling(full_width = F) 
+#kable(list(pcf4w,pcf3w,pgfw),caption="West") %>% kable_styling(full_width = F)
+```
+
+<br>
+<br>
+<br>
+<br>
+
 
 ## Recombination rates
 
