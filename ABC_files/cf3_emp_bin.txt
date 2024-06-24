@@ -1,0 +1,13 @@
+stat	bin	count
+sfs	1	194835
+sfs	2	69480
+sfs	3	32792
+sfs	4	24101
+sfs	5	17028
+sfs	6	7613
+pi	1	8972
+pi	2	5052
+pi	3	1452
+pi	4	234
+pi	5	58
+pi	6	53
