@@ -257,3 +257,45 @@ All 100,000 Simulations (orange) and Top 100 (blue)
 
 
 
+### Results Table
+```{r Results, echo=FALSE, fig.height=4, message=FALSE, warning=FALSE}
+
+priors <- read_tsv("ABC_files/ref_priors.txt") 
+
+priors$var <- factor(priors$var , levels = c("NeThree","TimeTwo","NeTwo","TimeOne","NeCurr"))
+
+priors <- priors[order(priors$var), ]
+
+
+postcicf3 <- read_tsv("ABC_files/cf3_e6_postCI.txt",skip = 1,col_names = c("param","cf3_mode","cf3_ci_lo","cf3_ci_up")) 
+postcigf <- read_tsv("ABC_files/gf_e6_postCI.txt",skip = 1,col_names = c("param","gf_mode","gf_ci_lo","gf_ci_up")) 
+
+postci <- left_join(postcicf3,postcigf,by="param")
+
+pripost <- priors %>% left_join(postci,by=c("var"="param")) 
+
+pripostgf<- pripost %>% select(var,st_gf,end_gf,gf_mode,gf_ci_lo,gf_ci_up)%>% 
+  mutate(gf_mode=as.integer(gf_mode),gf_ci_lo=as.integer(gf_ci_lo),gf_ci_up=as.integer(gf_ci_up))
+
+pripostcf3<- pripost %>% select(var,st_cf3,end_cf3,cf3_mode,cf3_ci_lo,cf3_ci_up) %>% 
+  mutate(cf3_mode=as.integer(cf3_mode),cf3_ci_lo=as.integer(cf3_ci_lo),cf3_ci_up=as.integer(cf3_ci_up))
+
+
+
+kable(pripostgf, "html", escape = FALSE,col.names = NULL,format.args = list(big.mark = ",") ) %>% 
+  kable_styling(full_width = F) %>%
+  add_header_above(c("Variable" = 1, "Min" = 1,"Max" = 1,"Mode" = 1,"CI lo" = 1,"CI up" = 1)) %>%
+  add_header_above(c(" "=1, "Priors" = 2, "Results" = 3))%>%
+  add_header_above(c("Grayfox"=6))
+
+
+kable(pripostcf3, "html", escape = FALSE,col.names = NULL,format.args = list(big.mark = ",") ) %>% 
+  kable_styling(full_width = F) %>%
+  add_header_above(c("Variable" = 1, "Min" = 1,"Max" = 1,"Mode" = 1,"CI lo" = 1,"CI up" = 1)) %>%
+  add_header_above(c(" "=1, "Priors" = 2, "Results" = 3))%>%
+  add_header_above(c("Canfam3"=6))
+
+
+
+
+```
