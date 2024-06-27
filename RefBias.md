@@ -373,6 +373,8 @@ NeCurr
 </tbody>
 </table>
 
+![](RefBias_files/figure-gfm/DemParam-1.png)<!-- -->![](RefBias_files/figure-gfm/DemParam-2.png)<!-- -->
+
 ## Summary Statistics
 
 ![](RefBias_files/figure-gfm/empBin-1.png)<!-- -->
