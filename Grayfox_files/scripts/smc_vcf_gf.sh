@@ -22,18 +22,16 @@ EAS_SAMPLES=("SRR24465286" "SRR24465275" "SRR24465272" "SRR24465271" "SRR2446530
 
 # Loop through WES samples
 for SAMPLE in "${WES_SAMPLES[@]}"; do
-    # Dynamically create a list of WES samples excluding the current SAMPLE
-    WES_OTHER_SAMPLES=("${WES_SAMPLES[@]/$SAMPLE}")  # Remove $SAMPLE from the array
+    WES_OTHER_SAMPLES=("${WES_SAMPLES[@]}")  
     smc++ vcf2smc \
     -d $SAMPLE $SAMPLE -m $MAP_FILE $VCF_FILE wes_${SAMPLE}_chr${SLURM_ARRAY_TASK_ID}.gf.smc.gz \
-    chr${SLURM_ARRAY_TASK_ID} WES:${WES_OTHER_SAMPLES[*]}  # Use the updated list
+    chr${SLURM_ARRAY_TASK_ID} WES:${WES_OTHER_SAMPLES[*]}
 done
 
 # Loop through EAS samples
 for SAMPLE in "${EAS_SAMPLES[@]}"; do
-    # Dynamically create a list of EAS samples excluding the current SAMPLE
-    EAS_OTHER_SAMPLES=("${EAS_SAMPLES[@]/$SAMPLE}")  # Remove $SAMPLE from the array
+    EAS_OTHER_SAMPLES=("${EAS_SAMPLES[@]}")  
     smc++ vcf2smc \
     -d $SAMPLE $SAMPLE -m $MAP_FILE $VCF_FILE eas_${SAMPLE}_chr${SLURM_ARRAY_TASK_ID}.gf.smc.gz \
-    chr${SLURM_ARRAY_TASK_ID} EAS:${EAS_OTHER_SAMPLES[*]}  # Use the updated list
+    chr${SLURM_ARRAY_TASK_ID} EAS:${EAS_OTHER_SAMPLES[*]}
 done
