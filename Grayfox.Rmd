@@ -22,11 +22,23 @@ library(grid)
 library(RColorBrewer)
 ```
 
-## Reference genome
+## Reference genomes
 
->Armstrong et al. (2024). Chromosome-level assembly of the gray fox (Urocyon cinereoargenteus) confirms the basal loss of PRDM9 in Canidae, G3 Genes|Genomes|Genetics, 14:4jkae034, https://doi.org/10.1093/g3journal/jkae034
 
 <img src="Grayfox_files/input/circos_plot.jpeg" width="400"/>
+
+### Gray Fox
+>Armstrong et al. (2024). Chromosome-level assembly of the gray fox (Urocyon cinereoargenteus) confirms the basal loss of PRDM9 in Canidae, G3 Genes|Genomes|Genetics, 14:4jkae034, https://doi.org/10.1093/g3journal/jkae034
+
+
+### Arctic Fox
+>Peng et al. (2021). Chromosome-level genome assembly of the Arctic fox (Vulpes lagopus) using PacBio sequencing and Hi-C technology, Molecular Ecology Resources, 21:2093–2108, https://doi.org/10.1111/1755-0998.13397
+
+
+### Dog (CanFam4)
+>Wang et al. (2021). A novel canine reference genome resolves genomic architecture and uncovers transcript complexity, Communications Biology, 4:185, https://doi.org/10.1038/s42003-021-01698-x
+
+
 
 ## Samples 
 

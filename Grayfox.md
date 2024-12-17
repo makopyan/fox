@@ -1,7 +1,10 @@
 Grayfox
 ================
 
--   [Reference genome](#reference-genome)
+-   [Reference genomes](#reference-genomes)
+    -   [Gray Fox](#gray-fox)
+    -   [Arctic Fox](#arctic-fox)
+    -   [Dog (CanFam4)](#dog-canfam4)
 -   [Samples](#samples)
     -   [PCA](#pca)
     -   [Map (Fig1A)](#map-fig1a)
@@ -22,12 +25,27 @@ Grayfox
     -   [Outlier Analysis](#outlier-analysis)
 -   [Compare SNPs](#compare-snps)
 
-## Reference genome
+## Reference genomes
+
+### Gray Fox
 
 > Armstrong et al. (2024). Chromosome-level assembly of the gray fox
 > (Urocyon cinereoargenteus) confirms the basal loss of PRDM9 in
 > Canidae, G3 Genes\|Genomes\|Genetics, 14:4jkae034,
 > <https://doi.org/10.1093/g3journal/jkae034>
+
+### Arctic Fox
+
+> Peng et al. (2021). Chromosome-level genome assembly of the Arctic fox
+> (Vulpes lagopus) using PacBio sequencing and Hi-C technology,
+> Molecular Ecology Resources, 21:2093–2108,
+> <https://doi.org/10.1111/1755-0998.13397>
+
+### Dog (CanFam4)
+
+> Wang et al. (2021). A novel canine reference genome resolves genomic
+> architecture and uncovers transcript complexity, Communications
+> Biology, 4:185, <https://doi.org/10.1038/s42003-021-01698-x>
 
 <img src="Grayfox_files/input/circos_plot.jpeg" width="400"/>
 
