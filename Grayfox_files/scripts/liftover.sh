@@ -15,6 +15,11 @@ cp canfam4-grayfox.paf cf4-gf-chr.paf
 cp arcticfox-grayfox.paf af-gf-chr.paf
 
 
+## Make pairwise alignment between Canfam4 and Arctic fox using Minimap2
+
+minimap2 -x asm20 canfam4_genome.fna arcticfox_genome.fna -t 8 > aln_af_cf4_asm20.paf
+
+
 ## Rename scaffolds to chromosomes
 
 bash cf4.gf.rename.sed cf4-gf-chr.paf
@@ -27,6 +32,9 @@ bash af.gf.rename.sed af-gf-chr.paf
 paf2chain -i cf4-gf-chr.paf > cf4-gf-chr.chain
 
 paf2chain -i af-gf-chr.paf > af-gf-chr.chain
+
+paf2chain -i aln_af_cf4_asm20.paf > aln_af_cf4_asm20.chain
+
 
 
 
@@ -93,8 +101,6 @@ CrossMap bed cf4-gf-chr.chain snpeast.bed | tee cf4_gf_east.txt
 CrossMap bed cf4-gf-chr.chain snpwest.bed | tee cf4_gf_west.txt
 
 
-
-
 ## Liftover 50kb FST regions to grayfox
 
 CrossMap region cf4-gf-chr.chain cf4_fst_50kb.txt | tee cf4_gf_fst.txt
@@ -102,5 +108,14 @@ CrossMap region cf4-gf-chr.chain cf4_fst_50kb.txt | tee cf4_gf_fst.txt
 CrossMap region af-gf-chr.chain af_fst_50kb.txt | tee af_gf_fst.txt
 
 
+## Liftover 50kb FST regions between heterospecifics
+
+CrossMap region /scratch1/marjanak/mash/aln_af_cf4_asm20.chain af_fst_50kb.txt  | tee af_cf4_fst.txt
 
 
+
+## Liftover 50kb recombination regions to grayfox
+
+CrossMap region cf4-gf-chr.chain cf4_recomb50kb.txt | tee cf4_gf_recomb.txt
+
+CrossMap region af-gf-chr.chain af_recomb50kb.txt | tee af_gf_recomb.txt

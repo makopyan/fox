@@ -20,6 +20,7 @@ library(ggpubr)
 library(gridExtra)
 library(grid)
 library(RColorBrewer)
+library(ggalluvial)
 ```
 
 ## Reference genomes
@@ -201,6 +202,132 @@ ggplot() +
 ```
 
 
+
+## Compare SNPs
+
+Get SNP positions based on grayfox genome
+
+```{bash get-snps, eval=F}
+
+## files not in project share_data directory, need to recreate
+
+module load bcftools
+
+bcftools query -f '%CHROM %POS\n' /project/jazlynmo_738/share_data/refbias/split_vcf_n6/west.gf.vcf.gz > west.gf.snps
+
+bcftools query -f '%CHROM %POS\n' /project/jazlynmo_738/share_data/refbias/split_vcf_n6/east.gf.vcf.gz > east.gf.snps
+
+```
+
+
+Make Figure 1C-F
+
+```{r snps, eval=F}
+
+library(VennDiagram)
+library(grid)
+
+
+gf_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_gf_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+gf_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_gf_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+af_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_af_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+af_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_af_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+cf4_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_cf4_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+cf4_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_cf4_snp_summary.txt",col_names = c("fixed","singleton","snp"))
+
+west_snp <- bind_rows("grayfox"=gf_W_snp, "arcticfox"=af_W_snp, "canfam4"=cf4_W_snp, .id="genome")
+east_snp <- bind_rows("grayfox"=gf_E_snp, "arcticfox"=af_E_snp, "canfam4"=cf4_E_snp, .id="genome")
+
+snps <- bind_rows("west"=west_snp, "east"=east_snp, .id="pop") %>% pivot_longer(fixed:snp, names_to = "category", values_to = "count") %>%   
+  group_by(genome, pop) %>% filter(category!="fixed") %>%
+  mutate(total_n = sum(count), percent_n = (count / total_n) * 100) 
+
+total_snp_plot <- ggplot(data=subset(snps, category!="all_snp"),aes(x=genome,y=count/1e6,fill=genome,alpha=category))+
+  geom_col()+
+  facet_wrap(~pop)+ 
+  scale_alpha_manual(values = c("0.5", "1"))+ 
+  scale_fill_manual(values=c("royalblue2","brown3","orange1"))
+  ylab("Count (millions)") + xlab("") +
+  geom_text(aes(label = scales::comma(total_n), y = (total_n/1e6) + 0.1), 
+            size = 3, vjust=-1,na.rm = TRUE) +
+  geom_text(aes(label = paste0(scales::comma(count), "\n", round(percent_n, 1), "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 3, color = "black", na.rm = TRUE)+
+  theme_classic() +
+  theme(axis.text = element_text(color="black"),
+        legend.position="top",
+        strip.background = element_blank(),
+        legend.title = element_blank()) + 
+  ylab("Count (millions)") +
+  scale_y_continuous(limits=c(-0.5,14), breaks=seq(0, 14, 2)) 
+
+
+cf4_af_gf <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/cf4_af_gf_summary.txt")
+
+
+
+
+
+cf4_af_gf_prop <- cf4_af_gf %>%   group_by(genome, pop) %>%
+  mutate(total_n = sum(n), percent_n = (n / total_n) * 100) %>%
+  mutate(snp_type = replace_na(snp_type, "NA"))%>% 
+  mutate(pop = recode(pop, `east` = "East", `west` = "West"))%>% 
+  mutate(genome = recode(genome, `arcticfox` = "Arctic Fox", `canfam4` = "CanFam4"))
+
+cf4_af_gf_prop$pop <-factor(cf4_af_gf_prop$pop, levels = c("West","East"))
+
+
+# Prepare data
+cf4_af_gf_prop$`Heterospecific-Conspecific` <- paste(cf4_af_gf_prop$canid_snp_type, "-", cf4_af_gf_prop$snp_type)
+cf4_af_gf_prop <- cf4_af_gf_prop %>%
+  group_by(genome, pop) %>%
+  mutate(
+    percentage = round(n/sum(n)*100, 1),
+    flow_id = paste(canid_snp_type, snp_type, sep="-")
+  ) %>%
+  ungroup()
+
+# Create the alluvial diagram
+ggplot(cf4_af_gf_prop,
+       aes(y = n, 
+           axis1 = canid_snp_type, 
+           axis2 = snp_type)) +
+  # Add the alluvium ribbons
+  geom_alluvium(aes(fill = paste(canid_snp_type, snp_type, sep="-")), 
+                width = 0.3,
+                alpha = 0.7) +
+  # Add labels to the ribbons (percentages)
+  geom_text(stat = "alluvium", 
+            aes(label = paste0(percentage, "%")),
+            min.y = 100000, # Set minimum size threshold to display text
+            size = 3,nudge_x = -0.3,fontface="bold",
+            color = "black") +
+  # Add the stratum rectangles
+  geom_stratum(width = 0.3, fill = "white", color = "black") +
+  # Add labels to the strata
+  geom_text(stat = "stratum", 
+            aes(label = after_stat(stratum)), 
+            size = 3,angle=90) +
+  scale_x_discrete(limits = c("Canid", "Gray Fox"),
+                   expand = c(0.05, 0.05)) +
+  scale_fill_manual(values=c("gray40","gray80","gray50","gray60","gray80","gray80")) +
+  scale_y_continuous(labels = comma_format()) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.line = element_blank(),
+        strip.background = element_blank(),
+        panel.spacing = unit(1, "lines"),
+        axis.text.x=element_text(color="black",size=12),
+        strip.text = element_text(size=12),
+        axis.ticks = element_blank(),
+        axis.text.y = element_blank(),
+        plot.title = element_text(face = "bold"),
+        axis.title = element_blank())+
+  facet_wrap(~pop+genome,scales="free",nrow=2)
+
+```
+
+
 ## Demographies
 
 ### Masks for smc++
@@ -349,7 +476,7 @@ ggplot()+
                      labels = ~ format(.x, scientific = FALSE))+
   theme_classic()+
   scale_alpha_manual(values=c(1,0.5))+
-  labs(x = bquote('Years'~(10^3)), y =  bquote('Effective Population Size'~(10^3)),tag="D)") +
+  labs(x = bquote('Years'~(10^3)), y =  bquote('Effective Population Size'~(10^3)),tag="B)") +
   theme(axis.text=element_text(color="black", size=11),
         plot.margin = margin(0.2,0.5,0,0.3, "lines"),
         plot.tag.position = c(0.01,0.98),
@@ -360,6 +487,25 @@ ggplot()+
         legend.margin = margin(0, 0, -10, 0))+
   scale_color_manual(values=c("royalblue2","brown3","orange1"))
 
+
+```
+
+Re-run smc++ after masking non-lifted SNPs in heterospecific genomes
+```{bash snplift_smc, eval=F}
+## make a list of unmapped SNPs
+
+#do for both pops with canfam4 and arctic fox
+awk -F'\t' '$6 == "Unmap" {print $1, $2, $3}' OFS='\t' cf4_gf_west.txt > cf4_west_unmap_snps.txt
+
+
+## add the unmapped SNPs to the mask file for smc++
+
+#do for both pops with canfam4 and arctic fox
+zcat /project/jazlynmo_738/DataRepository/Reference_Files/CanFam4/CanFam4_masks/canfam4.rep.map.genic.bed.gz | cat - cf4_west_unmap_snps.txt | sort -k1,1 -k2,2n | bgzip > canfam4.rep.map.genic.unmap.west.bed.gz
+tabix -p bed canfam4.rep.map.genic.unmap.west.bed.gz
+
+
+re-run smc++ scripts as before, using the new mask files
 
 ```
 
@@ -484,7 +630,7 @@ write_tsv(sfsp,"/project/jazlynmo_738/share_data/refbias/summary_stats/sfs.txt")
 ```
 
 
-```{r plot-sfs,warning=F, message=F, fig.height=5.5,  fig.width=3.5}
+```{r plot-sfs,warning=F, message=F, fig.height=3.5,  fig.width=5.5}
 
 sfs <- read_tsv("Grayfox_files/input/sfs.txt") %>% 
   mutate(pop = recode(pop, `east` = "East", `west` = "West"))
@@ -495,8 +641,8 @@ sfs$pop <-factor(sfs$pop, levels = c("West","East"))
 ggplot(data=sfs)+
   geom_col(aes(x=bin,y=prop,fill=genome,alpha=pop), color=NA, position = "dodge")+
   scale_fill_manual(values=c("brown3","royalblue2","orange1"))+
-  facet_wrap(~pop,nrow=2) + 
-  labs(tag="C)")+
+  facet_wrap(~pop,nrow=1) + 
+  labs(tag="A)")+
   ylab("Proportion of SNPs")+xlab("Allele Count")+
   theme_classic()+
   theme(legend.position="top",
@@ -908,8 +1054,366 @@ ggarrange(afr_E,cfr_E,gfr_E,afr_W,cfr_W,gfr_W,ncol=1,labels=c("arctifox","canfam
 ```
 
 
+Liftover recombination rates in 50kb windows from heterospecific to conspecific genomes
+
+```{bash liftover-recomb, eval=F}
+
+## this script also lifts over FST windows and SNP positions. 
+
+bash scripts/liftover.sh
+
+```
+
+
+Compare and plot recombination hotspots
+
+```{r hotspots, eval=F}
+
+library(tidyverse)
+library(GenomicRanges)
+
+af_gf_recomb <- read_table("~/Downloads/af_gf_recomb.txt",skip=5,
+                           col_names = c("af_chr","af_st","af_end","af_recomb","af_pop", 
+                                         "map","gf_chr","gf_st","gf_end","gf_recomb","gf_pop","ratio"))
+
+
+cf_gf_recomb <- read_table("~/Downloads/cf4_gf_recomb.txt",skip=5,
+                           col_names = c("cf_chr","cf_st","cf_end","cf_recomb","cf_pop", 
+                                         "map","gf_chr","gf_st","gf_end","gf_recomb","gf_pop","ratio"))
+
+gf_recomb<- read_table("~/Downloads/average_recomb_50kb_all.txt") %>% 
+  filter(genome=="grayfox")%>% 
+  mutate(gf_st=window_pos1,gf_end=window_pos1+50000) %>% 
+  dplyr::rename("gf_chr"="chrom", "gf_recomb"="recomb_avg","gf_pop"="pop") %>% 
+  select(gf_pop,gf_chr,gf_st,gf_end,gf_recomb) %>% 
+  mutate(gf_pop = recode(gf_pop, `east` = "East", `west` = "West"))
+  
+af_gf_recomb_map <- af_gf_recomb %>% filter(str_detect(gf_chr, "^chr")) %>% 
+  select(-gf_recomb) %>% 
+  mutate(gf_chr=as.numeric(str_remove(gf_chr,"chr"))) %>% 
+  mutate(af_chr=as.numeric(str_remove(af_chr,"chr"))) %>% 
+  select(af_chr,af_st,af_end,af_recomb,gf_pop,gf_chr,gf_st,gf_end)
+
+
+cf_gf_recomb_map <- cf_gf_recomb %>% filter(str_detect(gf_chr, "^chr")) %>% 
+  select(-gf_recomb) %>% 
+  mutate(gf_chr=as.numeric(str_remove(gf_chr,"chr"))) %>% 
+  mutate(cf_chr=as.numeric(str_remove(cf_chr,"chr"))) %>% 
+  select(cf_chr,cf_st,cf_end,cf_recomb,gf_pop,gf_chr,gf_st,gf_end)
+
+
+# Create GRanges objects
+gf_ranges <- GRanges(
+  seqnames = as.character(gf_recomb$gf_chr),
+  ranges = IRanges(start = gf_recomb$gf_st, end = gf_recomb$gf_end),
+  recomb = gf_recomb$gf_recomb,
+  pop = gf_recomb$gf_pop
+)
+
+# For af_gf_recomb_map, create ranges based on the grayfox mapping
+af_gf_ranges <- GRanges(
+  seqnames = as.character(af_gf_recomb_map$gf_chr),
+  ranges = IRanges(start = af_gf_recomb_map$gf_st, end = af_gf_recomb_map$gf_end),
+  af_chr = af_gf_recomb_map$af_chr,
+  af_st = af_gf_recomb_map$af_st,
+  af_end = af_gf_recomb_map$af_end,
+  af_recomb = af_gf_recomb_map$af_recomb,
+  pop = af_gf_recomb_map$gf_pop
+)
+
+
+# For cf_gf_recomb_map, create ranges based on the grayfox mapping
+cf_gf_ranges <- GRanges(
+  seqnames = as.character(cf_gf_recomb_map$gf_chr),
+  ranges = IRanges(start = cf_gf_recomb_map$gf_st, end = cf_gf_recomb_map$gf_end),
+  cf_chr = cf_gf_recomb_map$cf_chr,
+  cf_st = cf_gf_recomb_map$cf_st,
+  cf_end = cf_gf_recomb_map$cf_end,
+  cf_recomb = cf_gf_recomb_map$cf_recomb,
+  pop = cf_gf_recomb_map$gf_pop
+)
+
+# Find overlaps with af
+overlaps_af <- findOverlaps(af_gf_ranges, gf_ranges)
+query_hits_af <- queryHits(overlaps_af)
+subject_hits_af <- subjectHits(overlaps_af)
+
+# Create results dataframe
+results_af <- data.frame(
+  af_id = query_hits_af,  # Keep track of which arcticfox window
+  pop = af_gf_ranges$pop[query_hits_af],
+  af_chr = af_gf_ranges$af_chr[query_hits_af],
+  af_st = af_gf_ranges$af_st[query_hits_af],
+  af_end = af_gf_ranges$af_end[query_hits_af],
+  gf_chr = as.numeric(seqnames(gf_ranges)[subject_hits_af]),
+  gf_st = start(gf_ranges)[subject_hits_af],
+  gf_end = end(gf_ranges)[subject_hits_af],
+  af_recomb = af_gf_ranges$af_recomb[query_hits_af],
+  gf_recomb = gf_ranges$recomb[subject_hits_af],
+  overlap_start = pmax(start(af_gf_ranges)[query_hits_af], start(gf_ranges)[subject_hits_af]),
+  overlap_end = pmin(end(af_gf_ranges)[query_hits_af], end(gf_ranges)[subject_hits_af])
+)
+
+# Calculate overlap width
+results_af <- results_af %>% mutate(overlap_width = pmax(0, overlap_end - overlap_start)) %>% filter(overlap_width > 0)
+
+# Count how many grayfox windows overlap with each arcticfox window and calculate overlap width 
+window_counts_af <- results_af %>% group_by(af_id) %>% 
+  summarize(window_count = n(),total_overlap = sum(overlap_width))
+
+# Join the counts back to the results
+results_af <- results_af %>%
+  left_join(window_counts_af, by = "af_id") %>%
+  mutate(spans_multiple = window_count > 1, weight = overlap_width / total_overlap)
+
+# Calculate weighted average for windows that span multiple grayfox windows
+weighted_results_af <- results_af %>%
+  group_by(af_id, pop, af_chr, af_st, af_end, af_recomb, spans_multiple, window_count) %>%
+  summarize(weighted_gf_recomb = sum(gf_recomb * weight),total_overlap = max(total_overlap)) %>%
+  ungroup()
+
+# Separate by population
+east_results_af <- weighted_results_af %>% filter(pop == "East") %>% mutate(windows=case_when(window_count>1 ~ "multiple", TRUE ~ "one"))
+west_results_af <- weighted_results_af %>% filter(pop == "West") %>% mutate(windows=case_when(window_count>1 ~ "multiple", TRUE ~ "one"))
+
+af_hot_east <- af_gf_recomb_map %>% filter(gf_pop=="East") %>% 
+  summarise(mean_re=mean(af_recomb),sd_re=sd(af_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+af_hot_west <- af_gf_recomb_map %>% filter(gf_pop=="West") %>% 
+  summarise(mean_re=mean(af_recomb),sd_re=sd(af_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+gf_hot_east <- gf_recomb %>% filter(gf_pop=="East") %>% 
+  summarise(mean_re=mean(gf_recomb),sd_re=sd(gf_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+gf_hot_west <- gf_recomb %>% filter(gf_pop=="West") %>% 
+  summarise(mean_re=mean(gf_recomb),sd_re=sd(gf_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+east_hot_af <- east_results_af %>% 
+  mutate(af_hot=case_when(af_recomb > af_hot_east$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(gf_hot=case_when(weighted_gf_recomb > gf_hot_east$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(hotspots=case_when(af_hot=="hotspot" & gf_hot=="hotspot" ~ "both",
+                            af_hot=="hotspot" & gf_hot=="no" ~ "af only",
+                            af_hot=="no" & gf_hot=="hotspot" ~ "gf only",
+                            TRUE ~ "rest"))%>% 
+  mutate(hotspots = factor(hotspots, levels=c("af only", "gf only", "both", "rest")))
+
+
+west_hot_af <- west_results_af %>% 
+  mutate(af_hot=case_when(af_recomb > af_hot_west$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(gf_hot=case_when(weighted_gf_recomb > gf_hot_west$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(hotspots=case_when(af_hot=="hotspot" & gf_hot=="hotspot" ~ "both",
+                            af_hot=="hotspot" & gf_hot=="no" ~ "af only",
+                            af_hot=="no" & gf_hot=="hotspot" ~ "gf only",
+                            TRUE ~ "rest"))%>% 
+  mutate(hotspots = factor(hotspots, levels=c("af only", "gf only", "both", "rest")))
+
+
+
+# Find overlaps with cf
+overlaps_cf <- findOverlaps(cf_gf_ranges, gf_ranges)
+query_hits_cf <- queryHits(overlaps_cf)
+subject_hits_cf <- subjectHits(overlaps_cf)
+
+
+# Create results datcframe
+results_cf <- data.frame(
+  cf_id = query_hits_cf,  # Keep track of which arcticfox window
+  pop = cf_gf_ranges$pop[query_hits_cf],
+  cf_chr = cf_gf_ranges$cf_chr[query_hits_cf],
+  cf_st = cf_gf_ranges$cf_st[query_hits_cf],
+  cf_end = cf_gf_ranges$cf_end[query_hits_cf],
+  gf_chr = as.numeric(seqnames(gf_ranges)[subject_hits_cf]),
+  gf_st = start(gf_ranges)[subject_hits_cf],
+  gf_end = end(gf_ranges)[subject_hits_cf],
+  cf_recomb = cf_gf_ranges$cf_recomb[query_hits_cf],
+  gf_recomb = gf_ranges$recomb[subject_hits_cf],
+  overlap_start = pmax(start(cf_gf_ranges)[query_hits_cf], start(gf_ranges)[subject_hits_cf]),
+  overlap_end = pmin(end(cf_gf_ranges)[query_hits_cf], end(gf_ranges)[subject_hits_cf])
+)
+
+# Calculate overlap width
+results_cf <- results_cf %>% mutate(overlap_width = pmax(0, overlap_end - overlap_start)) %>% filter(overlap_width > 0)
+
+# Count how many grayfox windows overlap with each arcticfox window and calculate overlap width 
+window_counts_cf <- results_cf %>% group_by(cf_id) %>% 
+  summarize(window_count = n(),total_overlap = sum(overlap_width))
+
+# Join the counts back to the results
+results_cf <- results_cf %>%
+  left_join(window_counts_cf, by = "cf_id") %>%
+  mutate(spans_multiple = window_count > 1, weight = overlap_width / total_overlap)
+
+# Calculate weighted average for windows that span multiple grayfox windows
+weighted_results_cf <- results_cf %>%
+  group_by(cf_id, pop, cf_chr, cf_st, cf_end, cf_recomb, spans_multiple, window_count) %>%
+  summarize(weighted_gf_recomb = sum(gf_recomb * weight),total_overlap = max(total_overlap)) %>%
+  ungroup()
+
+# Separate by population
+east_results_cf <- weighted_results_cf %>% filter(pop == "East") %>% mutate(windows=case_when(window_count>1 ~ "multiple", TRUE ~ "one"))
+west_results_cf <- weighted_results_cf %>% filter(pop == "West") %>% mutate(windows=case_when(window_count>1 ~ "multiple", TRUE ~ "one"))
+
+cf_hot_east <- cf_gf_recomb_map %>% filter(gf_pop=="East") %>% 
+  summarise(mean_re=mean(cf_recomb),sd_re=sd(cf_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+cf_hot_west <- cf_gf_recomb_map %>% filter(gf_pop=="West") %>% 
+  summarise(mean_re=mean(cf_recomb),sd_re=sd(cf_recomb)) %>% 
+  mutate(thresh=mean_re + 2*(sd_re))
+
+east_hot_cf <- east_results_cf %>% 
+  mutate(cf_hot=case_when(cf_recomb > cf_hot_east$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(gf_hot=case_when(weighted_gf_recomb > gf_hot_east$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(hotspots=case_when(cf_hot=="hotspot" & gf_hot=="hotspot" ~ "both",
+                            cf_hot=="hotspot" & gf_hot=="no" ~ "cf only",
+                            cf_hot=="no" & gf_hot=="hotspot" ~ "gf only",
+                            TRUE ~ "rest"))%>% 
+  mutate(hotspots = factor(hotspots, levels=c("cf only", "gf only", "both", "rest")))
+
+west_hot_cf <- west_results_cf %>% 
+  mutate(cf_hot=case_when(cf_recomb > cf_hot_west$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(gf_hot=case_when(weighted_gf_recomb > gf_hot_west$thresh ~ "hotspot", TRUE ~ "no")) %>% 
+  mutate(hotspots=case_when(cf_hot=="hotspot" & gf_hot=="hotspot" ~ "both",
+                            cf_hot=="hotspot" & gf_hot=="no" ~ "cf only",
+                            cf_hot=="no" & gf_hot=="hotspot" ~ "gf only",
+                            TRUE ~ "rest"))  %>% 
+  mutate(hotspots = factor(hotspots, levels=c("cf only", "gf only", "both", "rest")))
+
+# add labels for Arctic Fox
+
+af_hot_counts_east <- east_hot_af %>% 
+  count(hotspots) %>%
+  mutate(label = paste0(hotspots, " (n=", n, ")"))
+
+af_hot_labels_east <- setNames(af_hot_counts_east$label, af_hot_counts_east$hotspots)
+
+af_hot_counts_west <- west_hot_af %>% 
+  count(hotspots) %>%
+  mutate(label = paste0(hotspots, " (n=", n, ")")) 
+
+af_hot_labels_west <- setNames(af_hot_counts_west$label, af_hot_counts_west$hotspots)
+
+
+
+# add labels for canfam4
+
+cf_hot_counts_east <- east_hot_cf %>% 
+  count(hotspots) %>%
+  mutate(label = paste0(hotspots, " (n=", n, ")")) 
+
+cf_hot_labels_east <- setNames(cf_hot_counts_east$label, cf_hot_counts_east$hotspots)
+
+cf_hot_counts_west <- west_hot_cf %>% 
+  count(hotspots) %>%
+  mutate(label = paste0(hotspots, " (n=", n, ")")) 
+
+cf_hot_labels_west <- setNames(cf_hot_counts_west$label, cf_hot_counts_west$hotspots)
+
+
+
+
+
+af_hot_plot_east <- ggplot(east_hot_af) +
+  geom_point(aes(y = (af_recomb), x = (weighted_gf_recomb), color = hotspots)) +
+  theme_classic() +
+  theme(legend.position = c(0.8,0.85),
+        legend.background = element_rect(fill="gray95"),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(0.8, 'lines'),
+        axis.title = element_text(size=12),
+        axis.text = element_text(color = "black",size=10)) +
+  scale_y_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  scale_x_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+   ylab("Arctic Fox Recomb. Rate") +
+  xlab("Gray Fox Recomb. Rate") +
+  labs(title="East")+
+  scale_color_manual(values = c("dodgerblue2", "goldenrod","black", "gray"),
+                     labels = af_hot_labels_east)
+
+
+
+af_hot_plot_west <- ggplot(west_hot_af) +
+  geom_point(aes(y = (af_recomb), x = (weighted_gf_recomb), color = hotspots)) +
+  theme_classic() +
+  theme(legend.position = c(0.8,0.85),
+        legend.background = element_rect(fill="gray95"),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(0.8, 'lines'),
+        axis.title = element_text(size=12),
+        axis.text = element_text(color = "black",size=10)) +
+  scale_y_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  scale_x_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  ylab("Arctic Fox Recomb. Rate") +
+  xlab("Gray Fox Recomb. Rate") +
+  labs(title="West")+
+  scale_color_manual(values = c("dodgerblue2", "goldenrod","black", "gray"),
+                     labels = af_hot_labels_west)
+
+
+
+cf_hot_plot_east <- ggplot(east_hot_cf) +
+  geom_point(aes(y = (cf_recomb), x = (weighted_gf_recomb), color = hotspots)) +
+  theme_classic() +
+  theme(legend.position = c(0.8,0.85),
+        legend.background = element_rect(fill="gray95"),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(0.8, 'lines'),
+        axis.title = element_text(size=12),
+        axis.text = element_text(color = "black",size=10)) +
+  scale_y_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  scale_x_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  ylab("Canfam4 Recomb. Rate") +
+  xlab("Gray Fox Recomb. Rate") +
+  labs(title="East")+
+  scale_color_manual(values = c("brown3", "goldenrod","black", "gray"),
+                     labels = cf_hot_labels_east)
+
+
+
+cf_hot_plot_west <- ggplot(west_hot_cf) +
+  geom_point(aes(y = (cf_recomb), x = (weighted_gf_recomb), color = hotspots)) +
+  theme_classic() +
+  theme(legend.position = c(0.8,0.85),
+        legend.background = element_rect(fill="gray95"),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(0.8, 'lines'),
+        axis.title = element_text(size=12),
+        axis.text = element_text(color = "black",size=10)) +
+  scale_y_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  scale_x_continuous(label = unit_format(scale=1e7,unit = "e-7",sep="",accuracy = .1))+
+  ylab("Canfam4 Recomb. Rate") +
+  xlab("Gray Fox Recomb. Rate") +
+  labs(title="West")+
+  scale_color_manual(values = c("brown3", "goldenrod","black", "gray"),
+                     labels = cf_hot_labels_west)
+
+ggarrange(af_hot_plot_east,af_hot_plot_west,cf_hot_plot_east,cf_hot_plot_west)
+```
+
+
+
 
 ## Diversity and Differentiation
+
+### Tajima's D
+
+```{bash tajD, eval=F}
+## script includes east and west for all genomes
+sbatch Grayfox_files/scripts/tajD.sh
+
+## concatenate output files for each chrom
+awk 'FNR==1 && NR!=1 { next } { print }' west_cf4_tajD_50kb_chr* > cf4_west_tajD_50kb.txt
+awk 'FNR==1 && NR!=1 { next } { print }' east_cf4_tajD_50kb_chr* > cf4_east_tajD_50kb.txt
+awk 'FNR==1 && NR!=1 { next } { print }' west_gf_tajD_50kb_chr* > gf_west_tajD_50kb.txt
+awk 'FNR==1 && NR!=1 { next } { print }' east_gf_tajD_50kb_chr* > gf_east_tajD_50kb.txt
+awk 'FNR==1 && NR!=1 { next } { print }' west_af_tajD_50kb_chr* > af_west_tajD_50kb.txt
+awk 'FNR==1 && NR!=1 { next } { print }' east_af_tajD_50kb_chr* > af_east_tajD_50kb.txt
+```
+
 
 ### Nucleotide diversity (π)
 
@@ -1024,9 +1528,22 @@ write_tsv(fst,"/project/jazlynmo_738/share_data/refbias/summary_stats/fst.txt")
 
 
 ```{r plot-pi-fst, eval=F}
-
 library(tidyverse)
 library(ggpubr)
+
+gf_e_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/gf_east_tajD_50kb.txt")
+gf_w_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/gf_west_tajD_50kb.txt")
+af_e_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/af_east_tajD_50kb.txt")
+af_w_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/af_west_tajD_50kb.txt")
+cf4_e_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/cf4_east_tajD_50kb.txt")
+cf4_w_tajd <- read_tsv("/project/jazlynmo_738/Maria/tajD_all_chr/cf4_west_tajD_50kb.txt")
+
+
+tajD_east <- bind_rows("grayfox"=gf_e_tajd, "arcticfox"=af_e_tajd, "canfam4"=cf4_e_tajd, .id="genome") %>% 
+  drop_na(TajimaD) %>% mutate(genome=as.factor(genome))
+
+tajD_west <- bind_rows("grayfox"=gf_w_tajd, "arcticfox"=af_w_tajd, "canfam4"=cf4_w_tajd, .id="genome") %>% 
+  drop_na(TajimaD) %>% mutate(genome=as.factor(genome))
 
 eastpi<-read_tsv("/project/jazlynmo_738/share_data/refbias/summary_stats/eastpi.txt")
 
@@ -1040,13 +1557,19 @@ pifstW <- westpi %>% inner_join(fst, by=c("genome","CHROM","BIN_START","BIN_END"
 
 pifst <- bind_rows("East"=pifstE,"West"=pifstW,.id="pop")
 
+## Means
+
+meantajD_e <- tajD_east %>% group_by(genome) %>% summarise(mean=mean(TajimaD),sd=sd(TajimaD))
+
+meantajD_w <- tajD_west %>% group_by(genome) %>% summarise(mean=mean(TajimaD),sd=sd(TajimaD))
+
 meanpiE <- eastpi %>% group_by(genome) %>% summarise(mean=mean(PI),sd=sd(PI))
 
 meanpiW <- westpi %>% group_by(genome) %>% summarise(mean=mean(PI),sd=sd(PI))
 
 meanfst <- fst %>% group_by(genome) %>% summarise(mean=mean(MEAN_FST),sd=sd(MEAN_FST))
 
-
+## Plots
 Epi<- ggplot()+
   geom_violin(data=eastpi,aes(x=genome,y=PI,fill=genome),color="black",alpha=0.7) +
   geom_point(data=meanpiE, aes(x=genome,y=mean), shape=18,size=4)+
@@ -1127,22 +1650,28 @@ fig3ac <- ggarrange(Epi,Wpi,fstp,nrow=1, labels = c("A)","B)","C)"),
 
 ggsave(fig3ac,"fig3A-C.pdf")  
 
+#Stats
 
+tajd_kw_east <- kruskal.test(TajimaD ~ genome, data = tajD_east)
+pairwise.wilcox.test(tajD_east$TajimaD, tajD_east$genome, p.adjust.method = "bonferroni")
 
+tajd_kw_west <- kruskal.test(TajimaD ~ genome, data = tajD_west)
+pairwise.wilcox.test(tajD_west$TajimaD, tajD_west$genome, p.adjust.method = "bonferroni")
 ```
 
 
 ### Outlier Analysis
 
-Liftover outlier windows from heterospecific to conspecific genomes
+Liftover outlier windows from heterospecific to conspecific genomes, and between heterospecific genomes
 
 ```{bash liftover, eval=F}
 
-## this script also lifts over SNP positions for figure S2. 
+## this script also lifts over SNP positions Figure 1C-F. 
 
 bash scripts/liftover.sh
 
 ```
+
 
 
 Compare and plot outliers
@@ -1468,188 +1997,35 @@ ComplexUpset::upset(
 ```
 
 
-## Compare SNPs
+Get phyloP scores for outlier windows
+```{bash phylop, eval=F}
 
-Get SNP positions based on grayfox genome
+sbatch Grayfox_files/scripts/phylop.sh
 
-```{bash get-snps, eval=F}
+```
 
-## files not in project share_data directory, need to recreate
+Convert and summarize phyloP scores by genome
 
-module load bcftools
-
-bcftools query -f '%CHROM %POS\n' /project/jazlynmo_738/share_data/refbias/split_vcf_n6/west.gf.vcf.gz > west.gf.snps
-
-bcftools query -f '%CHROM %POS\n' /project/jazlynmo_738/share_data/refbias/split_vcf_n6/east.gf.vcf.gz > east.gf.snps
+```{r phyloP-analyze, eval=F}
 
 ```
 
 
-Make Figure S2
-
-```{r snps, eval=F}
-
-library(VennDiagram)
-library(grid)
-
-
-gf_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_gf_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-gf_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_gf_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-af_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_af_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-af_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_af_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-cf4_W_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/west_cf4_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-cf4_E_snp <- read_table("/project/jazlynmo_738/share_data/refbias/summary_stats/east_cf4_snp_summary.txt",col_names = c("fixed","singleton","snp"))
-
-west_snp <- bind_rows("grayfox"=gf_W_snp, "arcticfox"=af_W_snp, "canfam4"=cf4_W_snp, .id="genome")
-east_snp <- bind_rows("grayfox"=gf_E_snp, "arcticfox"=af_E_snp, "canfam4"=cf4_E_snp, .id="genome")
-
-snps <- bind_rows("west"=west_snp, "east"=east_snp, .id="pop") %>% pivot_longer(fixed:snp, names_to = "category", values_to = "count") %>%   
-  group_by(genome, pop) %>% filter(category!="fixed") %>%
-  mutate(total_n = sum(count), percent_n = (count / total_n) * 100) 
-
-total_snp_plot <- ggplot(data=subset(snps, category!="all_snp"),aes(x=genome,y=count/1e6,fill=category))+
-  geom_col()+
-  facet_wrap(~pop)+ 
-  scale_fill_manual(values = c("lightsalmon", "slategray3"))+ 
-  #scale_fill_manual(values = c("lightsalmon", "slategray3")) +
-  ylab("Count (millions)") + xlab("") +
-  geom_text(aes(label = scales::comma(total_n), y = (total_n/1e6) + 0.1), 
-            size = 3, vjust=-1,na.rm = TRUE) +
-  geom_text(aes(label = paste0(scales::comma(count), "\n", round(percent_n, 1), "%")), 
-            position = position_stack(vjust = 0.5), 
-            size = 3, color = "black", na.rm = TRUE)+
-  theme_classic() +
-  theme(axis.text = element_text(color="black"),
-        legend.position="top",
-        strip.background = element_blank(),
-        legend.title = element_blank()) + 
-  ylab("Count (millions)") +
-  scale_y_continuous(limits=c(-0.5,14), breaks=seq(0, 14, 2)) 
-
-
-gfWsnp <- fread("west.gf.snps", col.names = c("CHROM","START","END","count1","count2")) %>% 
-  mutate(snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp"))%>% select(-count1,-count2)
-
-gfEsnp <- fread("east.gf.snps", col.names = c("CHROM","START","END","count1","count2")) %>% 
-  mutate(snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp"))%>% select(-count1,-count2)
-
-cf4Wsnp <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/cf4_gf_west.txt",
-                      col_names = c("canid_CHROM","canid_START","canid_END","count1","count2","map","CHROM","START","END","trash1","trash2")) %>% 
-  mutate(canid_snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp")) %>% select(-count1,-count2,-trash1,-trash2)
-
-cf4Esnp <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/cf4_gf_east.txt",
-                      col_names = c("canid_CHROM","canid_START","canid_END","count1","count2","map","CHROM","START","END","trash1","trash2")) %>% 
-  mutate(canid_snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp")) %>% select(-count1,-count2,-trash1,-trash2)
-
-cf4wgf <- cf4Wsnp %>% left_join(gfWsnp, by=c("CHROM","START","END"))
-cf4egf <- cf4Esnp %>% left_join(gfEsnp, by=c("CHROM","START","END"))
-
-
-cf4wgf_count <- cf4wgf %>% group_by(canid_snp_type,snp_type) %>% count()
-cf4egf_count <- cf4egf %>% group_by(canid_snp_type,snp_type) %>% count()
-
-cf4_gf <- bind_rows("west"=cf4wgf_count,"east"=cf4egf_count, .id="pop")
-
-
-afWsnp <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/af_gf_west.txt",
-                      col_names = c("canid_CHROM","canid_START","canid_END","count1","count2","map","CHROM","START","END","trash1","trash2")) %>% 
-  mutate(canid_snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp")) %>% select(-count1,-count2,-trash1,-trash2)
-
-afEsnp <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/af_gf_east.txt",
-                      col_names = c("canid_CHROM","canid_START","canid_END","count1","count2","map","CHROM","START","END","trash1","trash2")) %>% 
-  mutate(canid_snp_type=case_when(count1==1 | count2==1 ~ "singleton", TRUE ~ "snp")) %>% select(-count1,-count2,-trash1,-trash2)
-
-
-afwgf <- afWsnp %>% left_join(gfWsnp, by=c("CHROM","START","END"))
-afegf <- afEsnp %>% left_join(gfEsnp, by=c("CHROM","START","END"))
-
-afwgf_count <- afwgf %>% group_by(canid_snp_type,snp_type) %>% count()
-afegf_count <- afegf %>% group_by(canid_snp_type,snp_type) %>% count()
-
-af_gf <- bind_rows("west"=afwgf_count,"east"=afegf_count, .id="pop")
-
-cf4_gf <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/cf_gf_summary.txt")
-
-cf4_af_gf <- bind_rows("arcticfox"=af_gf, "canfam4"=cf4_gf, .id="genome")
-
-cf4_af_gf_prop <- cf4_af_gf %>%   group_by(genome, pop) %>%
-  mutate(total_n = sum(n), percent_n = (n / total_n) * 100)
-
-snp_match_plot <- ggplot(cf4_af_gf_prop, aes(x=canid_snp_type, y=snp_type, fill=n / 1e6)) +
-  geom_tile(color="black") +
-  facet_grid(cols = vars(pop), rows = vars(genome)) +
-  geom_text(aes(label = paste0(comma(n), "\n", percent(percent_n / 100, accuracy = 0.1))), 
-            color = "black", size = 3) +
-  scale_fill_gradientn(colours = c("antiquewhite", "yellow", "orange"),
-                       labels = function(x) paste0(comma(x), "M")) +  # Format color bar in millions
-  theme_classic() +
-  theme(axis.text = element_text(color="black"),
-        legend.position="top",
-        strip.background = element_blank(),
-        legend.title = element_blank()) +  
-  ylab("Grayfox") + xlab("")
-
-
-cf4_af_gf <- read_table("/project/jazlynmo_738/share_data/refbias/liftover/snps/cf4_af_gf_summary.txt")
-
-cf4_af_gf_match <- cf4_af_gf %>% filter(canid_snp_type==snp_type) %>% 
-  pivot_wider(names_from = canid_snp_type:snp_type, values_from = n)%>% 
-  rename("sing_match"='singleton_singleton',"snp_match"='snp_snp')
-
-gf_snps <- bind_rows("east"=gf_E_snp, "west"=gf_W_snp, .id="pop") %>% select(-fixed) %>% rename("gf_sing"='singleton',"gf_snp"='snp')
-
-canid_snps <- bind_rows("west"=west_snp, "east"=east_snp, .id="pop") %>% pivot_longer(fixed:snp, names_to = "category", values_to = "count") %>%   
-  group_by(genome, pop) %>% filter(category!="fixed" & genome!="grayfox") %>% 
-  pivot_wider(names_from=category, values_from=count)
-
-venns<-canid_snps %>% left_join(cf4_af_gf_match,by=c("pop","genome")) %>% 
-  left_join(gf_snps,by="pop") %>% select(pop,genome,gf_sing,singleton,sing_match,gf_snp,snp,snp_match)
-
-venns_sing<-canid_snps %>% left_join(cf4_af_gf_match,by=c("pop","genome")) %>% left_join(gf_snps,by="pop") %>% select(pop,genome,singleton,gf_sing,sing_match)
-venns_snp<-canid_snps %>% left_join(cf4_af_gf_match,by=c("pop","genome")) %>% left_join(gf_snps,by="pop") %>% select(pop,genome,snp,gf_snp,snp_match)
-
-# Create a list to store the Venn diagram grobs (graphical objects)
-venn_list <- list()
-
-# Loop through each row of the dataframe to create and save each Venn diagram as a grob
-for (i in 1:nrow(venns_sing)) {
-  # Extract data from the current row
-  pop <- venns_sing$pop[i]
-  genome <- venns_sing$genome[i]
-  singleton <- venns_sing$singleton[i]
-  gf_sing <- venns_sing$gf_sing[i]
-  sing_match <- venns_sing$sing_match[i]
-  
-  # Plotting the Venn diagram with smaller numbers (adjust cex)
-  venn.plot <- draw.pairwise.venn(
-    area1 = singleton,
-    area2 = gf_sing,
-    cross.area = sing_match,
-    category = c("Singleton", "GF_Sing"),
-    fill = c("red", "blue"),
-    lty = "blank",
-    cex = 1,  # Adjust this to make numbers smaller
-    cat.cex = 1,
-    cat.col = c("red", "blue"),
-    cat.dist = 0.05,
-    cat.pos = c(-20, 20)
-  )
-  
-  # Save each plot as a grob (graphical object) using grid.grabExpr
-  venn_grob <- grid.grabExpr(grid.draw(venn.plot))
-  
-  # Store the plot in the list with the pop and genome as a label
-  venn_list[[i]] <- ggarrange(venn_grob, 
-                              top = textGrob(paste(pop, "-", genome), 
-                                             gp = gpar(fontsize = 8, fontface = "bold")))
-}
-
-# Combine the plots using ggarrange from the ggpubr package
-combined_plot <- ggarrange(plotlist = venn_list, ncol = 4, nrow = 1)
-
-
-ggarrange(ggarrange(total_snp_plot,snp_match_plot,ncol=2,widths=c(0.9,1), labels = c("A","B")),combined_plot, nrow=2, labels="C",label.y = 0, heights=c(1,0.5))
-
+GO terms of genes in unique outliers
+```{r unique-GO,eval=F}
 
 ```
+
+
+Count genic and intergenic regions in outliers
+```{r annotation-counts, eval=F}
+
+```
+
+
+Count mutation types in outliers
+```{bash snpeff, eval=F}
+sbatch Grayfox_files/scripts/snpeff.sh
+```
+
 
