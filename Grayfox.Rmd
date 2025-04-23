@@ -1999,29 +1999,22 @@ ComplexUpset::upset(
 
 Get phyloP scores for outlier windows
 ```{bash phylop, eval=F}
-
 sbatch Grayfox_files/scripts/phylop.sh
-
 ```
 
-Convert and summarize phyloP scores by genome
+<br>
 
-```{r phyloP-analyze, eval=F}
+GO terms of genes in unique outliers 
 
-```
+R script: 'Grayfox_files/scripts/genes_in_outliers.R
 
+<br>
 
-GO terms of genes in unique outliers
-```{r unique-GO,eval=F}
+Count genic and intergenic regions in outliers. 
 
-```
+R script: 'Grayfox_files/scripts/intergenic.R
 
-
-Count genic and intergenic regions in outliers
-```{r annotation-counts, eval=F}
-
-```
-
+<br>
 
 Count mutation types in outliers
 ```{bash snpeff, eval=F}
@@ -2029,3 +2022,14 @@ sbatch Grayfox_files/scripts/snpeff.sh
 ```
 
 
+Obtain reference mapping summary stats
+```{bash read_var, eval=F}
+python Grayfox_files/scripts/pull_read_var.py
+```
+
+
+
+Obtain gray fox coordinates of unmapped reads in Arctic fox and dog
+```{bash bed_coords, eval=F}
+python Grayfox_files/scripts/generate_bed_coords.py
+```

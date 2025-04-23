@@ -1,30 +1,30 @@
 Grayfox
 ================
 
--   [Reference genomes](#reference-genomes)
-    -   [Gray Fox](#gray-fox)
-    -   [Arctic Fox](#arctic-fox)
-    -   [Dog (CanFam4)](#dog-canfam4)
--   [Samples](#samples)
-    -   [PCA](#pca)
-    -   [Map (Fig1A)](#map-fig1a)
--   [Compare SNPs](#compare-snps)
--   [Demographies](#demographies)
-    -   [Masks for smc++](#masks-for-smc)
-    -   [Input for smc++](#input-for-smc)
-    -   [Run smc++ estimate and plot](#run-smc-estimate-and-plot)
-    -   [Plot smc++ output](#plot-smc-output)
-    -   [MSMC2](#msmc2)
-    -   [Run Stairway Plot 2](#run-stairway-plot-2)
-    -   [Plot MSMC2 Stairway Plot 2](#plot-msmc2-stairway-plot-2)
--   [Site Frequency Spectra](#site-frequency-spectra)
--   [Recombination Rate](#recombination-rate)
--   [Diversity and Differentiation](#diversity-and-differentiation)
-    -   [Tajima’s D](#tajimas-d)
-    -   [Nucleotide diversity (π)](#nucleotide-diversity-π)
-    -   [Genetic Differentiation
-        (F<sub>ST</sub>)](#genetic-differentiation-fst)
-    -   [Outlier Analysis](#outlier-analysis)
+- [Reference genomes](#reference-genomes)
+  - [Gray Fox](#gray-fox)
+  - [Arctic Fox](#arctic-fox)
+  - [Dog (CanFam4)](#dog-canfam4)
+- [Samples](#samples)
+  - [PCA](#pca)
+  - [Map (Fig1A)](#map-fig1a)
+- [Compare SNPs](#compare-snps)
+- [Demographies](#demographies)
+  - [Masks for smc++](#masks-for-smc)
+  - [Input for smc++](#input-for-smc)
+  - [Run smc++ estimate and plot](#run-smc-estimate-and-plot)
+  - [Plot smc++ output](#plot-smc-output)
+  - [MSMC2](#msmc2)
+  - [Run Stairway Plot 2](#run-stairway-plot-2)
+  - [Plot MSMC2 Stairway Plot 2](#plot-msmc2-stairway-plot-2)
+- [Site Frequency Spectra](#site-frequency-spectra)
+- [Recombination Rate](#recombination-rate)
+- [Diversity and Differentiation](#diversity-and-differentiation)
+  - [Tajima’s D](#tajimas-d)
+  - [Nucleotide diversity (π)](#nucleotide-diversity-π)
+  - [Genetic Differentiation
+    (F<sub>ST</sub>)](#genetic-differentiation-fst)
+  - [Outlier Analysis](#outlier-analysis)
 
 ## Reference genomes
 
@@ -212,6 +212,7 @@ ggplot() +
 Get SNP positions based on grayfox genome
 
 ``` bash
+
 ## files not in project share_data directory, need to recreate
 
 module load bcftools
@@ -475,6 +476,7 @@ sbatch Grayfox_files/scripts/msmc_size_e.sh
 ### Run Stairway Plot 2
 
 ``` bash
+
 #run blueprint for each pop and genome to generate and run scripts for stairway plot
 sbatch Grayfox_files/scripts/stairway_blueprint.sh
 ```
@@ -550,6 +552,7 @@ ggplot(data=sfs)+
 ## Recombination Rate
 
 ``` bash
+
 #compute look-up table and test hyperparams for each pop and reference genome
 sbatch Grayfox_files/scripts/pyrho1.sh
 
@@ -930,6 +933,7 @@ Liftover recombination rates in 50kb windows from heterospecific to
 conspecific genomes
 
 ``` bash
+
 ## this script also lifts over FST windows and SNP positions. 
 
 bash scripts/liftover.sh
@@ -1282,7 +1286,7 @@ awk 'FNR==1 && NR!=1 { next } { print }' east_af_tajD_50kb_chr* > af_east_tajD_5
 
 ### Nucleotide diversity (π)
 
-Use six GVCFs (variant and invariant sites) output by gvcf\_filt.sh
+Use six GVCFs (variant and invariant sites) output by gvcf_filt.sh
 script
 
 ``` bash
@@ -1520,10 +1524,12 @@ pairwise.wilcox.test(tajD_west$TajimaD, tajD_west$genome, p.adjust.method = "bon
 
 ### Outlier Analysis
 
-Liftover outlier windows from heterospecific to conspecific genomes
+Liftover outlier windows from heterospecific to conspecific genomes, and
+between heterospecific genomes
 
 ``` bash
-## this script also lifts over SNP positions for figure S2. 
+
+## this script also lifts over SNP positions Figure 1C-F. 
 
 bash scripts/liftover.sh
 ```
@@ -1850,14 +1856,34 @@ Get phyloP scores for outlier windows
 sbatch Grayfox_files/scripts/phylop.sh
 ```
 
-Convert and summarize phyloP scores by genome
+<br>
 
 GO terms of genes in unique outliers
 
-Count genic and intergenic regions in outliers
+R script: ’Grayfox_files/scripts/genes_in_outliers.R
+
+<br>
+
+Count genic and intergenic regions in outliers.
+
+R script: ’Grayfox_files/scripts/intergenic.R
+
+<br>
 
 Count mutation types in outliers
 
 ``` bash
 sbatch Grayfox_files/scripts/snpeff.sh
+```
+
+Obtain reference mapping summary stats
+
+``` bash
+python Grayfox_files/scripts/pull_read_var.py
+```
+
+Obtain gray fox coordinates of unmapped reads in Arctic fox and dog
+
+``` bash
+python Grayfox_files/scripts/generate_bed_coords.py
 ```
